@@ -585,7 +585,7 @@ label {
 }
 
 #spin:after {
-  content: "‏‏‎‏‏‎‎builds ";
+  content: "‏‏‎‏‏‎‎builds  ";
   animation: spin 3s linear infinite
 }
 
@@ -594,7 +594,7 @@ label {
     content: "‏‏‎deploys‎‎ ‎‎‏‏‎"
   }
   66% {
-    content: "‏‏‎‎releases "
+    content: "‏‏‎‎releases  "
   }
 }
 
