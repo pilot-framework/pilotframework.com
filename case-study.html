@@ -764,6 +764,28 @@
         </p>
         <!-- Section 10 -->
         <h2 class="h2">10 Future Work</h2>
+        <p>
+          There are many features we would like to add to Pilot but we have a key few
+          that would round out and bolster its capabilities and ease of use. 
+        </p>
+        <ul>
+          <li>
+            We want to add support for a wider range of cloud providers as Pilot currently only supports for AWS and GCP. 
+          </li>
+          <li>
+            A user interface for database management would provide central management rather than having users go through a cloud provider's management console. 
+          </li>
+          <li>
+            Make configuring environment variables of applications easier through a UI component. There are
+            multiple ways environment variables could be set but a few options are within a waypoint.hcl file
+            or using the Waypoint CLI on an application or project level.
+          </li>
+          <li>
+            Lastly, we would like to support more Infrastructure as a Service offerings during our application
+            initialization process. With AWS for example, we default the generated configuration file to deploy
+            applications using Fargate on ECS but you could also use EC2 or lambda deployments by modifying the generated waypoint.hcl file.
+          </li>
+        </ul>
 
         <!-- Section 11 -->
         <h2>11 Team</h2>
