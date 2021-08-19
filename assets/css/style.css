@@ -573,6 +573,7 @@ label {
   background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
+  padding-right: 1rem;
 }
 
 #spin:after {
@@ -591,7 +592,6 @@ label {
 
 .spin {
   align-self: flex-start;
-  padding-right: 1rem;
 }
 
 .fa-github:hover {
