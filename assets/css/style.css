@@ -578,7 +578,7 @@ label {
 }*/
 
 #spin {
-  background-image: linear-gradient(111deg, #67429A, #A23FA6);
+  background-image: linear-gradient(111deg, #67429A, #A77AE5);
   background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -877,7 +877,7 @@ a:hover {
   -ms-flex-align: center;
   align-items: center;
   border-radius: 25px;
-  background-image: linear-gradient(111deg, #A23FA6, #67429A);
+  background-image: linear-gradient(111deg, #A77AE5, #67429A);
 }
 
 .black-h2 {
@@ -1188,7 +1188,7 @@ a:hover {
 }
 
 .primary-button:hover {
-  background-image: linear-gradient(111deg, #67429A, #A23FA6);
+  background-image: linear-gradient(111deg, #67429A, #A77AE5);
 }
 
 .button-container {
