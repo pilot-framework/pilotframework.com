@@ -382,28 +382,28 @@
           to multiple cloud providers. Using it as base for Pilot's design provided several benefits.
         </p>
         <br />
-        <p><strong>Existing User Interface</strong></p>
+        <h4>Existing User Interface</h4>
         <br />
         <p>
           We were able to focus on CLI and infrastructure development since Waypoint has an existing user
           interface. It is simple in features and does not require a large time investment to get the hang of. 
         </p>
         <br />
-        <p><strong>Custom Plugin Ecosystem</strong></p>
+        <h4>Custom Plugin Ecosystem</h4>
         <br />
         <p>
           The Waypoint SDK allowed us to develop our own custom plugins in Go. This enabled us to add in
           static web hosting as a deployment option using our Cloudfront and Cloud CDN plugins.
         </p>
         <br />
-        <p><strong>Trusted Open-Source Company</strong></p>
+        <h4>Trusted Open-Source Company</h4>
         <br />
         <p>
           Waypoint was developed by HashiCorp which we considered to be a trusted open-source company.
           They are well known and have products that many companies have incorporated into their multi-cloud strategies. 
         </p>
         <br />
-        <p><strong>Familiarity with HashiCorp Configuration Language</strong></p>
+        <h4>Familiarity with HashiCorp Configuration Language</h4>
         <br />
         <p>
           Developers that have used HashiCorp's products are also familiar with their HashiCorp
@@ -418,7 +418,7 @@
           Remote collaboration is an important aspect of a PaaS but can have some roadblocks when configuring your own.
         </p>
         <br />
-        <p><strong>Steps to Set Up Waypoint</strong></p>
+        <h4>Steps to Set Up Waypoint</h4>
         <br />
         <p>
           Currently with Waypoint it is difficult to use it as a remote management option.
@@ -449,14 +449,18 @@
           We believed automating this process would remove a large pain point for our users.
         </p>
         <br />
-        <p><strong>Using a Remote Waypoint Server</strong></p>
+        <h4>Using a Remote Waypoint Server</h4>
         <br />
         <p>
           We decided to use a remote Waypoint server to serve as the backbone of Pilot's
           deployment operations to multiple cloud providers. But you might be wondering:
           why was it a good option to create a remote Pilot server in the first place?
         </p>
-        <!-- TODO: figure -->
+        <br />
+        <figure>
+          <img src="assets/images/case-study/local_waypoint.png" class="case-study-image" />
+          <figcaption>Fig. X: TODO</figcaption>
+        </figure>
         <br />
         <p>
           As you can see, a simple Waypoint configuration is much easier when set up
@@ -465,7 +469,11 @@
           on deployment jobs. The Waypoint binary will serve as the runner in this
           type of configuration which is less management overhead. 
         </p>
-        <!-- TODO: figure -->
+        <br />
+        <figure>
+          <img src="assets/images/case-study/remote_waypoint.png" class="case-study-image" />
+          <figcaption>Fig. X: TODO</figcaption>
+        </figure>
         <br />
         <p>
           A remote Pilot server would enable us to provide increased flexibility for
@@ -490,7 +498,11 @@
           for our containers. 
         </p>
         <br />
-        <!-- TODO: figure -->
+        <figure>
+          <img src="assets/images/case-study/k8s_cluster.png" class="case-study-image" />
+          <figcaption>Fig. X: TODO</figcaption>
+        </figure>
+        <br />
         <p>
           With Kubernetes orchestration we could spin up a cluster that would give us
           the benefits of high availability and scalability. Having multiple runners
@@ -515,7 +527,11 @@
           Kubernetes clusters can also be difficult to maintain without a dedicated DevOps engineer or team member who has DevOps experience. 
         </p>
         <br />
-        <!-- TODO: figure -->
+        <figure>
+          <img src="assets/images/case-study/pilot_server.png" class="case-study-image" />
+          <figcaption>Fig. X: TODO</figcaption>
+        </figure>
+        <br />
         <p>
           With Pilot we decided to make the Pilot server virtual machine provision a single
           server and runner container on Docker as a platform. Through our testing as a
