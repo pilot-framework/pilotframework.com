@@ -568,15 +568,6 @@ label {
   }
 }
 
-/*@keyframes spin {
-  0% {
-    transform: rotate(0)
-  }
-  100% {
-    transform: rotate(360deg)
-  }
-}*/
-
 #spin {
   background-image: linear-gradient(111deg, #67429A, #A77AE5);
   background-clip: text;
@@ -585,21 +576,22 @@ label {
 }
 
 #spin:after {
-  content: "‏‏‎‏‏‎‎builds  ";
+  content: "‏‏‎‏‏‎‎builds";
   animation: spin 3s linear infinite
 }
 
 @keyframes spin {
   33% {
-    content: "‏‏‎deploys‎‎ ‎‎‏‏‎"
+    content: "‏‏‎deploys‎‎‎‎‏‏‎"
   }
   66% {
-    content: "‏‏‎‎releases  "
+    content: "‏‏‎‎releases"
   }
 }
 
 .spin {
   align-self: flex-start;
+  padding-right: 1rem;
 }
 
 .fa-github:hover {
