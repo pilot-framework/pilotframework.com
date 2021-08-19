@@ -144,7 +144,7 @@ figcaption {
 [class*=" w-icon-"],
 [class^="w-icon-"] {
   font-family: webflow-icons !important;
-  speak: none;
+  /* speak: none; */
   font-style: normal;
   font-weight: 400;
   font-variant: normal;
@@ -451,7 +451,7 @@ label {
   display: none;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
-  tap-highlight-color: transparent;
+  /* tap-highlight-color: transparent; */
   -webkit-user-select: none;
   -moz-user-select: none;
   -ms-user-select: none;
@@ -579,6 +579,7 @@ label {
 
 #spin {
   background-image: linear-gradient(111deg, #67429A, #A23FA6);
+  background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
@@ -1237,6 +1238,7 @@ a:hover {
 
 .tertiary-button:hover {
   text-shadow: 0 0 6px rgba(255, 255, 255, 1);
+  box-shadow: 0 5px 40px -10px rgba(255, 255, 255, 0.57);
   -webkit-box-shadow: 0 5px 40px -10px rgba(255, 255, 255, 0.57);
   -moz-box-shadow: 0 5px 40px -10px rgba(255, 255, 255, 0.57);
   transition: all 0.4s ease 0s;
@@ -1553,9 +1555,6 @@ a:hover {
   .black-paragraph.centered {
     max-width: 450px;
     margin-bottom: 30px;
-  }
-  .white-paragraph {
-    /*    font-size: 17px*/
   }
   .white-paragraph.bottom-margin {
     margin-bottom: 30px;
