@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="utf-8" />
-  <title>Dendro • Case Study</title>
+  <title>Pilot • Case Study</title>
   <meta content="width=device-width, initial-scale=1" name="viewport" />
   <link href="assets/css/style.css" rel="stylesheet" type="text/css" />
   <script src="https://ajax.googleapis.com/ajax/libs/webfont/1.6.26/webfont.js" type="text/javascript"></script>
@@ -45,7 +45,7 @@
         </div>
         <div class="navigation-right">
           <div class="login-buttons">
-            <a href="https://github.com/dendro-monitoring" target="_blank">
+            <a href="https://github.com/pilot-framework" target="_blank">
               <span style="color: #161d6f">
                 <i class="fab fa-github fa-lg"></i>
               </span>
@@ -74,1120 +74,742 @@
         <p>
           The last decade has seen a paradigm shift in computing infrastructure. Systems are becoming more and more
           ephemeral, abstracted, and distributed. Innovations in computing infrastructure and software architectures
-          have yielded simpler components at higher levels of abstraction, but behind those simpler pieces lurk more
-          complex systems. Engineers are able to deploy and stitch together many more different kinds of software
-          components today, resulting in vastly increased complexity. As individual nodes in your system’s topology
-          become more decentralized, they also become more complicated to track and monitor.
+          have yielded simpler components at higher levels of abstraction, allowing engineers to deploy and stitch
+          together many more different kinds of software components today, resulting in vastly increased complexity.
+        </p>
+        <br />
+        <p>
+          This complexity has only been increasing as more and more companies adopt a multi-cloud strategy and utilize
+          services across cloud providers.
         </p>
 
-        <h3>1.1 What is Dendro?</h3>
+        <h3>1.1 What is Pilot?</h3>
         <p>
-          Dendro is an open-source, serverless monitoring framework for small, distributed apps. Our team built Dendro
-          in order to help small teams handle the challenges of operating a distributed system.
+          Pilot is an open-source, multi-cloud framework that provisions an internal PaaS with a workflow-agnostic
+          build, deploy, and release pipeline. Our team built Pilot in order to help small teams tackle the challenges
+          of adopting a multi-cloud strategy.
         </p>
         <br />
         <p>
-          Dendro enables you to collect, centralize, and store log and metric data emitted by the various disparate
-          pieces of your system. With Dendro, when something goes down in production, there’s no race to SSH into a
-          dozen different nodes to figure out what’s gone wrong; all of the log data you’d use for debugging has already
-          been collected, processed and tagged with the servers and services that originated the individual records, and
-          stored in a single database for querying.
+          Pilot enables you to deploy, manage, and quickly iterate upon your applications regardless of the complexity
+          of the underlying architecture. With Pilot, you don't have to learn the specifics of a certain service offered
+          by a cloud provider - such as Amazon Web Service's Elastic Container Service. You can simply give Pilot some
+          cursory information about your application, and Pilot will handle the rest. The same goes for other cloud providers,
+          such as Google Cloud Platform. 
         </p>
         <br />
         <p>
-          All of this empowers the user to both greatly reduce costly downtime or outages, and proactively improve the
-          overall performance of their systems. Prevention is important: you want to catch problems before your users
-          do. If you’re constantly applying ad-hoc, band-aid fixes, you’re making your system more fragile instead of
-          less.
-        </p>
-        <br />
-        <p>
-          To illustrate just exactly what Dendro does, let’s use the example of a small company named NapTime.
-        </p>
-        <br />
-
-        <h3>1.2 NapTime: An Example User Story</h3>
-        <p>
-          NapTime has two engineers, and they recently completed the beta build of their sleep monitoring app.
-        </p>
-        <br />
-        <p>
-          Their system itself has proven to be resilient so far, thanks to its small size and simplicity.
-        </p>
-        <figure>
-          <img src="assets/images/case-study/naptime-early.png" class="case-study-image" />
-          <figcaption>Fig. 1: NapTime's beta architecture</figcaption>
-        </figure>
-        <br />
-        <p>
-          NapTime built a simple three-tier system in order to avoid premature optimization, with their web server and
-          application running on one server, and their database on another.
-        </p>
-        <br />
-        <p>
-          The two engineers have been busy developing features and shipping their first few builds. When an outage or
-          critical bug pops up, it derails their development flow. NapTime doesn’t currently have a monitoring solution
-          in place, so they’re totally reliant on either hearing from users when something breaks, or coming across an
-          issue themselves by poking around the system.
-        </p>
-        <br />
-
-        <h3>1.3 An Outage at NapTime</h3>
-        <p>
-          What happens when an outage is reported? Say, for example, a couple of users reach out to say that they’re
-          trying to access their homepages but they’re just receiving a 500-level error.
-        </p>
-        <br />
-        <figure>
-          <img src="assets/images/case-study/debugging-small.gif" class="case-study-image" />
-          <figcaption>Fig. 2: How can NapTime determine what's wrong?</figcaption>
-        </figure>
-        <br />
-        <p>
-          The engineers decide on three priority debugging steps: ensure that each server in their system is up, ensure
-          that each of the services running on those servers is up, and check whether those services are sending and
-          receiving requests and responses successfully.
-        </p>
-        <br />
-        <figure>
-          <img src="assets/images/case-study/debugging-steps.gif" class="case-study-image" />
-          <figcaption>Fig. 3: Some potential debugging steps for NapTime's engineers</figcaption>
-        </figure>
-        <br />
-        <p>
-          First, if they have a list of their static IP addresses, they can use the Unix command line utility `ping` to
-          check whether each of the servers is up at all. If the servers are up, it’ll be useful to see their health
-          metrics. NapTime engineers might run a utility like `top` on each of the servers to see a summary of the
-          system’s health (e.g. overall CPU load or available memory) as well as what processes are running on the
-          server.
-        </p>
-        <br />
-        <p>
-          If everything checks out with the system’s health, it’s time to start looking into the individual services
-          running on each server. If the engineers are interested in a running process, like an application, they might
-          check the status of their process manager. Each service generally has a different method of checking its
-          health.
-        </p>
-        <br />
-        <p>
-          After the most obvious checks (e.g. is something even running?) come the next steps. What if none of their
-          checks turn up an issue? Performing each of the aforementioned steps manually will tell them how something is
-          performing at the moment of observation, but what about performance just before they checked? Or how about at
-          the time the complaints started coming in? The log files that each of NapTime’s servers and services produce
-          can provide the answers to these questions.
-        </p>
-        <br />
-        <figure>
-          <img src="assets/images/case-study/logs-historical.png" class="case-study-image" />
-          <figcaption>Fig. 4: NapTime's servers and services write their historical records to log files</figcaption>
-        </figure>
-        <br />
-        <p>
-          Let’s say that the NapTime team is curious about what’s going on with their Nginx web server. One of their
-          next steps would be to take a look at the access log file in the nginx subdirectory of var/log.
-        </p>
-        <br />
-        <p>
-          Web servers like nginx and Apache produce access logs, where each line contains information about each request
-          sent to the system; like the IP address of the requester, time of the request, the path of the requested file,
-          the server response code, the time it took the server to fulfill the request, and more. If there are 500-level
-          errors occurring, exploring the access log of their web server is where NapTime would find evidence of them.
-        </p>
-        <br />
-        <figure>
-          <img src="assets/images/case-study/log-breakdown.png" class="case-study-image" />
-          <figcaption>Fig. 5: An example of a single record from a web server's plain-text access log</figcaption>
-        </figure>
-        <br />
-        <p>
-          The individual log lines NapTime would find would look something like the above diagram. An interested
-          engineer can take logs like these and analyze them, either one by one or aggregated, in order to achieve a
-          number of insights, like:
-          <!-- TODO: Bullet points -->
-          · Finding individual specific events in the past
-          · Graphing trends over time, like 500 response codes or aggregated requests per minute
-          · And alerting specific users when pre-defined heuristic thresholds are met or surpassed
-        </p>
-        <br />
-
-        <h3>1.4 Scaling up NapTime</h3>
-        <p>
-          Let’s consider NapTime’s architecture and processes after they scale a bit more. They still have a three-tier
-          architecture, with presentation, business logic, and storage abstracted away from each other, but now they
-          have more overall servers and services.
-        </p>
-        <br />
-        <p>
-          Collecting and processing logs is straightforward when everything is on a single machine, you just use some
-          software to handle aggregation. But when you have a distributed system with multiple nodes, instead of just
-          software you need both software AND some infrastructure that can handle both transportation to and storage in
-          a new central location.
-        </p>
-        <br />
-        <figure>
-          <img src="assets/images/case-study/naptime-scaled.png" class="case-study-image" />
-          <figcaption>Fig. 6: NapTime's architecture after scaling</figcaption>
-        </figure>
-        <br />
-        <p>
-          Suddenly NapTime is in charge of 8 nodes instead of 2, scaled out app servers, more unique services, a load
-          balancer, and multiple databases. What is debugging like for them now? What if MongoDB suddenly stops
-          responding, or one of the app servers can no longer write to the Main Postgres instance? How will NapTime
-          isolate what went wrong, let alone actually fix it? Their number of servers and services keeps growing, and
-          the number of connections between all of them continues to grow exponentially. How is the team supposed to get
-          a holistic understanding of what’s happening across the entire topology of their system?
-        </p>
-        <br />
-        <p>
-          Monitoring is toil. That is, if you don’t have an automated framework taking care of it for you. As detailed
-          above, one key component in “monitoring” is examining the log output of your systems. That can mean reading
-          through files thousands of lines long, like NapTime’s Nginx Access Log, one line at a time. No one wants to
-          read log files line by line if it can be avoided. After all, one of the main motivations of the field of
-          software engineering is automating the toil out of processes.
-        </p>
-        <br />
-        <figure>
-          <img src="assets/images/case-study/tail.gif" class="case-study-image" />
-          <figcaption>Fig. 7: Running `tail -f` on a server/service's logfile can help you understand what that
-            server/service is doing over time</figcaption>
-        </figure>
-        <br />
-        <p>
-          On Unix-like systems, a common strategy to gain a quick insight into what’s happening with a service is to run
-          the command `tail -f` on the log file to which that service writes. Tail prints the last 10 lines of a given
-          file to STDOUT, and the `-f` flag indicates that the program should continue to “follow”, streaming new lines
-          to STDOUT as they are written to the file.
-        </p>
-        <br />
-        <p>
-          This process worked fine for NapTime when they wanted to watch the real time stream of log messages on one
-          machine or two. But what about now that their system is distributed across nearly a dozen servers? Are their
-          engineers going to open a dozen terminal windows and SSH onto each individual server?
-        </p>
-        <br />
-        <p>
-          Monitoring distributed applications is exponentially harder. The Naptime engineers simply wouldn’t be able to
-          watch and comprehend the stream of logs coming in for every service on each server in real time. They would
-          want to be able to capture those logs as they’re written or emitted and save them for later. Ideally on a
-          central server of some kind, so they don’t have to go SSHing around to find what they need in the stress of an
-          outage.
-        </p>
-        <br />
-
-        <h3>1.5 Observability</h3>
-        <p>
-          The visibility that a team like NapTime seeks into their system is summed up by the concept of observability.
-        </p>
-        <br />
-        <!-- TODO: Ø Cindy blockquote formatting here -->
-        <p>
-          Due to the nature of software, no complex system is ever healthy.
-        </p>
-        <br />
-        <p>
-          Distributed systems in particular are pathologically unpredictable. When multiple services in a distributed
-          system are communicating with each other over the wire, each hosted on a potentially ephemeral node, the
-          possible failure conditions are nearly endless. What if a server is down? What if a service is down? What if
-          both services are up but are failing to communicate for some reason? Et cetera.
-        </p>
-        <br />
-        <p>
-          In light of these challenges, a team must also keep in mind to design their systems to facilitate debugging..
-          Things will break and outages will occur. Hope is not a strategy; but preparedness is.
-        </p>
-        <br />
-
-        <h3>1.6 Need for a monitoring strategy</h3>
-        <p>
-          Things can get messy very quickly. Without a centralized platform for handling the collection, transportation,
-          and storage of your data, those valuable records can get lost or never collected in the first place.
-          Developing a strategy for the collection, centralization, and retention of your log and metric data means that
-          you don’t prematurely forfeit the benefits that logs and metrics provide.
-        </p>
-        <br />
-        <p>
-          Dendro acts as that strategy.
-        </p>
-        <br />
-        <figure>
-          <img src="assets/images/case-study/single-source.gif" class="case-study-image" />
-          <figcaption>Fig. 8: Dendro provides a single source of historical truth for application state</figcaption>
-        </figure>
-        <br />
-        <p>
-          A team can SSH into each of the nodes in their system, configure and deploy a logging pipeline using Dendro’s
-          cli tool, , and start shipping all of their log and metric data off of their servers and onto a central store.
-          The logs and metrics produced can come either from services running on the server, like nginx or Postgres, or
-          from the server itself, in the form of host metrics like CPU load or available memory.
-        </p>
-        <br />
-        <p>
-          Dendro provides a single, centralized log management solution, untangling the web of data producers and
-          consumers. No more routing logs from individual sources to multiple destinations over time. No more custom
-          aggregation scripts, cron jobs, or any of that. Dendro collects the logs and metrics emitted from distributed
-          servers and services over time, building a single source of historical state.
-        </p>
-        <br />
-        <p>
-          That single source of truth about system and service state and performance empowers the user to:
-          <!-- TODO: Bullet points -->
-          · Ensure that all output or generated data is reliably and automatically captured, without having to do it
-          manually
-          · Avoid context switching, or jumping between databases and machines trying to dig up whatever went wrong
-          · And reduce debugging time, because everything exists in a single database and can be queried and explored
-          like normal relational data.
-        </p>
-        <br />
-        <p>
-          Each of these benefits brings the user closer to the holy grail for engineers: automating away manual toil.
+          All of this allows developers to quickly get an application up and running on their desired cloud provider without
+          having to trawl through pages and pages of documentation or learn the ins-and-outs of how that cloud provider works.
         </p>
         <br />
 
         <!-- Section 2 -->
-        <h2 class="h2">2 Overview of Dendro</h2>
-        <h3>2.1 How does Dendro help teams?</h3>
+        <h2 class="h2">2 Multi-Cloud Strategy</h2>
+        <h3>2.1 ACME: An Example User Story</h3>
         <p>
-          To explore exactly how Dendro empowers small teams working on distributed applications, let’s think back to
-          the example of NapTime after they’ve scaled their architecture.
+          To discuss the adoption of a multi-cloud strategy, let's use an example company ACME. ACME's application is currently
+          a monolithic application - all business logic is handled within the same code-base. And in ACME's case, on a bare-metal
+          server that they own. This has been ACME's tried and true approach for awhile now; however, this infrastructure has limits.
+          With a single server, they're limited by physical bottlenecks like the server's memory and networking capabilities.
         </p>
         <br />
         <figure>
-          <img src="assets/images/case-study/dendro-agent.gif" class="case-study-image" />
-          <figcaption>Fig. 9: Dendro's CLI helps you install and configure a collection agent on your nodes</figcaption>
+          <img src="assets/images/case-study/monolith_1.png" class="case-study-image" />
+          <figcaption>Fig. 1: TODO</figcaption>
         </figure>
         <br />
         <p>
-          Dendro includes a collection agent that the team installs on each node in their system. That collection agent
-          gathers log and metric data from both the services running on the server, as well as information about the
-          server itself.
+          Because of this, ACME's CTO has been working on their <a href="https://en.wikipedia.org/wiki/Digital_transformation" target="_blank"> digital transformation</a>
+          plans. As part of their digital transformation, the CTO has informed the development team of the two most important goals:
         </p>
-        <br />
-        <p>
-          But how does the data make the jump from those machines to the central database? That would require an
-          infrastructure pipeline, in addition to the deployment of some type of collection software.
-        </p>
-        <br />
-
-        <h3>2.2 What’s in Dendro?</h3>
-        <p>
-          This is an overview of Dendro’s architecture and the infrastructure behind this framework. We’ll dive into it
-          in more detail later, but for now let’s stick to the main conceptual pieces.
-        </p>
-        <br />
-        <figure>
-          <img src="assets/images/case-study/dendro-architecture.gif" class="case-study-image" />
-          <figcaption>Fig. 10: An overview of Dendro's architecture, split into conceptual components</figcaption>
-        </figure>
-        <br />
-        <p>
-          We’ve already discussed how Dendro helps you set up the automated collection of logs and metrics from your
-          services. You don’t need to change a single line of your application code-- Dendro runs as a fully-decoupled
-          agent process on your nodes, tapping into the log files to which your services already write and scraping
-          metrics from the server. But collecting your logs and metrics is only the tip of the iceberg.
-        </p>
-        <br />
-        <p>
-          The collection agent streams data at the time of generation to your own pipeline that Dendro creates. Getting
-          the data off of the machine as quickly as possible is important for both your ability to monitor in real-time,
-          as well as ensuring that data isn’t lost if an ephemeral virtual machine gets spun down outside of your
-          control.
-        </p>
-        <br />
-        <p>
-          The pipeline also features a processing step where the collectors deployed by Dendro take the raw data coming
-          off of your servers and rework it into predictable, structured output, before storing it in a time-series
-          database optimized for writing, processing, and querying time-series data. Dendro builds a single source of
-          truth for you with each table representing a different capture source, while preserving the identity of the
-          host machine or process for each row of data.
-        </p>
-        <br />
-        <p>
-          All of your monitoring data existing in the same place (your Timestream database) allows you to keep context
-          switching at an absolute minimum while debugging, while also maintaining high-resolution in your data so you
-          can visualize and explore granular changes in the performance and state of your servers and services over
-          time.
-        </p>
-        <br />
-
-        <h3>2.3 Why did we build Dendro?</h3>
-        <p>
-          The goal we had in mind when we set out to build Dendro was to help teams start collecting, centralizing,
-          storing, and getting value out of their logs and metrics today, so they have them when they need them.
-        </p>
-        <br />
-
-        <!-- Section 3 -->
-        <h2 class="h2">3 Who should use Dendro?</h2>
-        <p>
-          When it comes to picking a monitoring solution, companies generally consider three options: buy, operate, or
-          build.
-        </p>
-        <br />
-        <figure>
-          <img src="assets/images/case-study/buy-operate-build.gif" class="case-study-image" />
-          <figcaption>Fig. 11: Teams generally choose between buying, personally operating, or building their own
-            monitoring solution</figcaption>
-        </figure>
-        <br />
-        <p>
-          If a small company like NapTime was to <span class="bold">buy</span> a solution, they might look at working
-          with a SaaS vendor like Datadog. Outsourcing your monitoring to a vendor makes the whole process very easy and
-          painless, but that ease comes with a pretty steep price. Not every small company has enough runway to justify
-          spending money on yet another SaaS service.
-        </p>
-        <br />
-        <p>
-          The next option then is to <span class="bold">operate</span>. Open source platforms like Elastic were
-          developed to make this relatively simple. However, if you want to use the open source Elastic Stack, you’re
-          still responsible for hosting all of it, and managing an Elasticsearch server requires knowledge of Java and
-          prolonged attention. What if NapTime’s engineers don’t have that expertise or time?
-        </p>
-        <br />
-        <p>
-          The third option, <span class="bold">build</span>, simply isn’t feasible for a small company. If you’re a tech
-          giant like Facebook or Twitter, with a huge budget and plenty of infrastructure, you can roll your own
-          observability platform. For a small company, their time is much better spent on their own core-business
-          product that keeps the lights on.
-        </p>
-        <br />
-        <p>
-          But what if there were another option? That’s where we think Dendro fits in.
-        </p>
-        <br />
-        <figure>
-          <img src="assets/images/case-study/dendro-comparison.png" class="case-study-image" />
-          <figcaption>Fig. 12: How our team chose to position Dendro in the marketplace of monitoring solutions
-          </figcaption>
-        </figure>
-        <br />
-        <p>
-          Dendro combines the <span class="bold">ease of deployment</span> and <span class="bold">low maintenance</span>
-          of a SaaS solution thanks to its collection agents and fully-serverless pipeline.
-        </p>
-        <br />
-        <p>
-          Dendro mirrors the <span class="bold">ownership of data</span> promised by Open Source or DIY solutions. Log
-          data can be extremely sensitive, and you don’t necessarily want someone else having access to your records in
-          their god view/admin platform.
-        </p>
-        <br />
-        <p>
-          However, Dendro isn’t nearly as <span class="bold">feature rich</span> as any of the other solutions. We built
-          Dendro with a specific, niche use-case in mind and can’t come close to offering the richness of a Datadog,
-          Elastic Stack, or highly custom DIY platform.
-        </p>
-        <br />
-        <p>
-          One of Dendro’s main differentiators is that <span class="bold">Dendro treats time-series data as a
-            first-class citizen</span>. The time-series database in Dendro’s pipeline is optimized for inserting and
-          indexing time-based data, and comes with a whole slew of time-series query and aggregation functionality that
-          Elasticsearch does not support.
-        </p>
-        <br />
-        <p>
-          But, what we traded for the ease and speed of setup and time-series optimization is cost. We designed the
-          pipeline using AWS components, and while their pricing can be opaque and tricky to calculate at times Dendro
-          certainly costs more to keep running than the Elastic Stack or a DIY platform because you’re not operating the
-          platform on your own infrastructure.
-        </p>
-        <br />
-
-
-        <!-- Section 4 -->
-        <h2 class="h2">4 Design Decisions</h2>
-
-        <p>
-          Our primary goal while designing Dendro was to help teams start collecting, centralizing, storing, and getting
-          value out of their logs and metrics as soon as possible. That way, teams have their monitoring data already
-          saved and explorable when they need it the most: in the stress of an outage. Our team took that goal and broke
-          it up into three components:
-
-          <!-- TODO: Bulletpoints -->
-          <span class="bold">The need for a “low-toil framework”</span>
-          <span class="bold">Treating time-series data as a first class citizen</span>
-          <span class="bold">Decreasing Mean Time to Resolve (MTTR)</span>
-        </p>
-        <br />
-
-        <h3>4.1 Low-toil</h3>
-        <p>
-          A low-toil framework is one that is easy to set up and maintain, helping your core development flow without
-          adding to your busy workload. There are 3 factors the team decided were crucial to determining whether a
-          framework could be called “low-toil”:
-        </p>
-        <br />
-
-        <h5>Ease of Integration</h5>
-        <p>
-          To start aggregating logs and scraping metrics, users generally need to deploy a collection tool onto their
-          servers. Ideally, such a tool should be able to collect, transform and route all monitoring data. Moreover, it
-          should be able to configure monitoring for multiple services without requiring users to write custom
-          integration code.
-        </p>
-        <br />
-        <h5>A ready-made pipeline</h5>
-        <p>
-          A low-toil framework should provision and deploy a pre-designed/opinionated logging pipeline for users,
-          freeing them from the need to research and construct their own -- enabling them to focus on their core
-          functionality.
-        </p>
-        <br />
-        <figure>
-          <img src="assets/images/case-study/api-calls.png" class="case-study-image" />
-          <figcaption>Fig. 13: Dendro's CLI commands abstract away the dozens of API calls to AWS required for setting
-            up a pipeline</figcaption>
-        </figure>
-        <br />
-        <h5>Low maintenance</h5>
-        <p>
-          Provisioning and maintaining servers takes time and can be difficult. And even under close observation, they
-          can still crash at seemingly random times. The ideal low-toil framework would feature a pipeline that is
-          completely serverless to avoid extra stress and overhead for development teams.
-        </p>
-        <br />
-        <p>
-          Every service in Dendro’s pipeline is fully serverless and managed for you by AWS. Users don’t need to worry
-          about Dendro crashing or becoming bogged down during peak loads.
-        </p>
-        <br />
-
-        <h3>4.2 Time-series native</h3>
-        <p>
-          Time series data is a collection of observations obtained through repeated measurements over time. Think of a
-          graph that has time as the x-axis-- that’s time-series data. At the level of a single record, time-series data
-          is indistinguishable from normal relational data that features a timestamp as a field.
-        </p>
-        <br />
-        <figure>
-          <img src="assets/images/case-study/timestream-schema.png" class="case-study-image" />
-          <figcaption>Fig. 14: An example schema for Timestream, AWS's time-series database</figcaption>
-        </figure>
-        <br />
-        <p>
-          With that in mind, log data is perfectly suited to being treated as time-series data. For example, time series
-          data could measure the average response time of a web server over the course of a week. The distinction
-          between normal relational data and time-series data is more meaningful when one thinks about aggregating and
-          querying data at the database level.
-        </p>
-        <br />
-        <!-- TODO: Kreps block quote: “A log is an append-only, totally-ordered sequence of records ordered by time.” -->
-        <p>
-          Elasticsearch & other such stores/services are optimized for text-based indexing and querying, but are not
-          optimized for time, and so typical queries you’d want to perform with time-based data are either slow or not
-          possible to perform.
-        </p>
-        <br />
-        <p>
-          Mapping logs from plain-text log lines to time-series records in a database unlocks a large range of
-          time-specific querying functionality that helps Dendro improve your ability to extract insights from your logs
-          over time.
-        </p>
-        <br />
-        <p>
-          If we look at a web server such as Apache or nginx, we can think of a few important metrics that use time as a
-          measurement.
-          <!-- TODO: Numbers -->
-          1. Request time duration - “What happened yesterday that caused our average request time to double?”
-          2. Request status codes - “What happened at 4pm that started causing 500 status codes?”
-          3. Requests per second - “When are our slowest hours so the team can schedule maintenance?”
-        </p>
-        <br />
-
-        <h3>4.3 Decrease Mean Time to Resolve (MTTR)</h3>
-        <p>
-          Getting insights into distributed systems is cumbersome.
-        </p>
-        <br />
-        <p>
-          For example, think back to NapTime’s scaled architecture. Their system includes 8 different nodes and 16
-          different network connections that could fail. If some error occurs, where did it happen? What node failed?
-          What logs do they check? Without log aggregation and centralization, NapTime would have to check each node
-          individually.
-        </p>
-        <br />
-        <figure>
-          <img src="assets/images/case-study/connections.png" class="case-study-image" />
-          <figcaption>Fig. 15: How can engineers debug systems with exponentially growing numbers of nodes/connections?
-          </figcaption>
-        </figure>
-        <br />
-        <p>
-          Dendro aims to decrease the time between an outage occurring and the time it takes for you to resolve it. We
-          don’t want your outages to be a murder mystery. And we don’t want you or your team being reactive.
-        </p>
-        <br />
-        <p>
-          Instead, we want you to be proactive. Dendro not only helps you catch issues early, but also informs you in
-          real-time precisely what’s broken, helping you pinpoint exactly what went wrong and on which node. Dendro does
-          so by monitoring incoming logs and metrics to notify users of failures, thereby decreasing the time it takes
-          for your team to become aware of a problem.
-        </p>
-        <br />
-        <figure>
-          <img src="assets/images/case-study/proactive.png" class="case-study-image" />
-          <figcaption>Fig. 16: Dendro helps you be proactive, rather than reactive, in debugging your system
-          </figcaption>
-        </figure>
-        <br />
-        <p>
-          With Dendro, NapTime’s engineer’s no longer need to check 8 different nodes. By aggregating logs into a single
-          database and providing a dashboard to query and view health metrics, Dendro helps solve outages efficiently
-          without your engineers having to play detective.
-        </p>
-        <br />
-
-
-        <!-- Section 5 -->
-        <h2 class="h2">5 Dendro's Architecture</h2>
-        <br />
-        <figure>
-          <img src="assets/images/case-study/architecture.png" class="case-study-image" />
-          <figcaption>Fig. 17: Dendro's architecture</figcaption>
-        </figure>
-        <br />
-        <p>
-          We’ve seen how Dendro’s architecture is split up into four major conceptual sections. In this next section
-          we’re going to more closely examine these pieces as well as the individual components that comprise them.
-        </p>
-        <br />
-
-        <h3>5.1 Collection</h3>
-        <br />
-        <figure>
-          <img src="assets/images/case-study/collection.png" class="case-study-image" />
-          <figcaption>Fig. 18: Dendro's collection step</figcaption>
-        </figure>
-        <br />
-        <p>
-          For each service in a user’s distributed app that they want to monitor, they need to set up collection. Dendro
-          uses a collection agent called <a href="https://vector.dev/" target="_blank">Vector</a> to gather, transform,
-          and send a user’s distributed logs to the pipeline.
-        </p>
-        <br />
-        <p>
-          Raw logs are text based, unqueryable and generally hard to work with. Vector makes it possible to take this
-          raw, plaintext nginx access log and convert it to JSON prior to sending the log off to the pipeline for
-          further processing.
-        </p>
-        <br />
-        <figure>
-          <img src="assets/images/case-study/highlighted-log.png" class="case-study-image" />
-          <figcaption>Fig. 19: Extracting information from raw logs is difficult</figcaption>
-        </figure>
-        <br />
-        <p>
-          Looking at this log, we can see several important pieces of information. The path that was requested, the
-          amount of time it took to complete the request, as well as the time the event occurred. Dendro needs to
-          somehow identify and capture this information from this dynamic log.
-        </p>
-        <br />
-        <p>
-          To properly function on each node it’s deployed on, Vector requires a lengthy configuration file. It includes
-          all of the log and metric sources you want to gather from and the sinks you’re sending to. It requires writing
-          esoteric regexes to transform those logs from plaintext to a structured format, and configuring your AWS
-          credentials to ship to the pipeline. Dendro adds a “type” field to each collected record, identifying the
-          service that produced the log. This type property is crucial for a sorting step that occurs later on in the
-          pipeline and which we’ll discuss below.
-        </p>
-        <br />
-        <br />
-        <figure>
-          <img src="assets/images/case-study/vector-config.png" class="case-study-image" />
-          <figcaption>Fig. 20: A basic config file for vector is dozens of lines long</figcaption>
-        </figure>
-        <br />
-        <p>
-          Writing out all of this information is extremely laborious. A fully fleshed out configuration file is over 400
-          lines long, and this caused our team plenty of headaches when we were first manually typing it out.
-        </p>
-        <br />
-        <p>
-          In order to streamline this, the team built a `dendro configure` CLI command that launches a configuration
-          wizard, providing a prompt to select which services our users want to monitor. With these services selected,
-          Dendro is able to dynamically generate the long config file Vector requires without manual effort.
-        </p>
-        <br />
-        <br />
-        <figure>
-          <img src="assets/images/case-study/dendro-config.gif" class="case-study-image" />
-          <figcaption>Fig. 21: Dendro's configure command</figcaption>
-        </figure>
-        <br />
-        <p>
-          Once Vector is properly configured, it gathers logs and metrics, transforms them from plaintext to JSON, and
-          then sends them off to the cloud pipeline. Once in the pipeline, the first stop is AWS Kinesis Data Firehose.
-        </p>
-        <br />
-
-        <h3>5.2 Transform</h3>
-        <br />
-        <figure>
-          <img src="assets/images/case-study/transform.png" class="case-study-image" />
-          <figcaption>Fig. 22: Tranformation section of Dendro's cloud infrastructure</figcaption>
-        </figure>
-        <br />
-        <p>
-          Kinesis Data Firehose is a fully-managed, real-time streaming platform that captures, transforms & delivers
-          data. It ingests new data up to a predefined threshold (Dendro defaults to use one minute/1MB) in order to
-          optimize network efficiency, and because it’s completely serverless, it adds no additional infrastructure for
-          the users of Dendro to manage.
-        </p>
-        <br />
-        <br />
-        <figure>
-          <img src="assets/images/case-study/connections-bad.png" class="case-study-image" />
-          <figcaption>Fig. 22: An impossible to manage web of connections between services</figcaption>
-        </figure>
-        <br />
-        <p>
-          In today’s distributed world, data produced by one service is often consumed by multiple other services.
-          Connecting all of these is difficult, time-consuming and hyper-specific. Dendro uses Kinesis to help decouple
-          services from one another. Instead of connecting every service together in a hyper-specific manner, each
-          service can publish to or consume from the Data Firehose.
-        </p>
-        <br />
-        <br />
-        <figure>
-          <img src="assets/images/case-study/connections-good.png" class="case-study-image" />
-          <figcaption>Fig. 23: Services decoupled from one another</figcaption>
-        </figure>
-        <br />
-        <p>
-          Once the data buffering threshold is met, data is pointed to the static HTTP Endpoint of an S3 bucket. Data is
-          temporarily staged in the bucket for two main reasons: to assist with retries of failed deliveries and persist
-          any records that errored out before being stored in Timestream (which will prompt an alert from Dendro’s
-          monitoring setup, as we’ll discuss later), as well as to trigger a Lambda function on being written.
-        </p>
-        <br />
-        <p>
-          Lambda is a serverless compute service that allows users to execute code without provisioning servers. Lambdas
-          can be invoked in response to certain triggers making them event-driven, and they can scale proportionally to
-          the incoming workload by concurrently invoking more instances of a function when needed. This ability to
-          continuously scale is perfect for Dendro because log data tends to be very bursty.
-        </p>
-        <br />
-        <br />
-        <figure>
-          <img src="assets/images/case-study/lambda-go.png" class="case-study-image" />
-          <figcaption>Fig. 24: Dendro's Lambda function sorting and inserting records into Timestream</figcaption>
-        </figure>
-        <br />
-        <p>
-          The Lambda function serves to transform, sort, and load data into Timestream, our selected time-series
-          database. The team initially wrote the Lambda function in JavaScript, but later rewrote it in Golang because
-          the Lambda function is pivotal to the throughput of data ingestion and using a compiled language offered
-          faster speeds and lower overhead. This rewrite to Go netted us a two-fold increase in throughput when
-          processing 1,000 records.
-        </p>
-        <br />
-        <p>
-          Once invoked, Dendro’s Lambda function retrieves the newly written records from the bucket, sorts, and stores
-          them into separate tables in Timestream based on the type property, which is added earlier using Vector.
-        </p>
-        <br />
-
-        <h3>5.3 Store</h3>
-        <p>
-          This takes us to Timestream, a time-series optimized database service. With the user’s data extracted,
-          transformed, and finally loaded into Timestream, they are able to analyze and query this data across arbitrary
-          periods of time. Dendro has taken their raw logs and metrics and converted them into a form that's easily
-          analyzable and processable.
-        </p>
-        <br />
-        <p>
-          This is possible because Timestream provides a SQL-like language to query this data. This query language is
-          extremely powerful because not only is it already familiar to most developers, but also it adds some very
-          powerful functions that work with time-series datasets.
-        </p>
-        <br />
-        <br />
-        <figure>
-          <img src="assets/images/case-study/timeseries-query.png" class="case-study-image" />
-          <figcaption>Fig. 25: Time-series analysis with SQL</figcaption>
-        </figure>
-        <br />
-        <p>
-          The power of a time-series database can be summed up by the idea that changes in data over time are tracked as
-          INSERTS, rather than as UPDATES. There’s no rewriting of existing data when you’re thinking in terms of
-          time-series, there are just multiple observations over time. This unlocks rich potential for graphing,
-          visualizing, and understanding trends in your data over time-- precisely what the team set out to do when we
-          designed Dendro.
-        </p>
-        <br />
-
-        <h3>5.4 Monitor</h3>
-        <br />
-        <figure>
-          <img src="assets/images/case-study/monitor.png" class="case-study-image" />
-          <figcaption>Fig. 26: Monitoring section of Dendro's cloud infrastructure</figcaption>
-        </figure>
-        <br />
-        <p>
-          With the aforementioned infrastructure in place, the team was able to build a monitoring and alerting system
-          to harness the incoming logs. This enables some useful functionality, like the ability to email our users as
-          soon as critical errors in their distributed system occur (like a web server suddenly only returning 500
-          response codes). This core functionality is made possible by CloudWatch.
-        </p>
-        <br />
-        <p>
-          CloudWatch provides a centralized view of all the logs coming from the user’s cloud infrastructure. Dendro
-          users are able to set up metric filters on incoming logs and set heuristic thresholds that, when activated,
-          will set off an alarm. Triggered alarms publish an event to their corresponding Simple Notification Service
-          topic, which will in turn email any users that have subscribed to that topic during setup. This allows us to
-          watch for any errors as they occur and immediately notify our users.
-        </p>
-        <br />
-        <p>
-          Finally, we arrive at Dendro’s custom-built data exploration and dashboarding server.
-        </p>
-        <br />
-        <br />
-        <figure>
-          <img src="assets/images/case-study/dashboard-charts.png" class="case-study-image" />
-          <figcaption>Fig. 27: Dendro's chart page</figcaption>
-        </figure>
-        <br />
-        <p>
-          We built a dashboarding hub to help users visualize and query their data in near real-time as it's being
-          produced. This dashboard is available for view on any machine in the user’s distributed system that has Dendro
-          installed. The team has pre-populated the dashboard with charts that allow users of Dendro to isolate
-          anomalies and see historical trends. These charts are generated and populated in real time, providing an
-          up-to-the-minute view of system state in a single location.
-        </p>
-        <br />
-        <br />
-        <figure>
-          <img src="assets/images/case-study/dashboard-query.png" class="case-study-image" />
-          <figcaption>Fig. 28: Dendro's query page</figcaption>
-        </figure>
-        <br />
-        <p>
-          Because accessing AWS functionality through their actual website GUI can take time and effort, we also built
-          in the ability to query Timestream directly from the dashboarding hub, exploring any returned rows for
-          convenience and exporting the data as JSON with the click of a button.
-        </p>
-        <br />
-        <p>
-          Now that we’ve individually examined each component of Dendro, we’re better equipped to understand Dendro as a
-          whole and how to use it.
-        </p>
-        <br />
-
-
-        <!-- Section 6 -->
-        <h2 class="h2">6 Installing and Using Dendro</h2>
-        <h3>6.1 Installing Dendro</h3>
-        <br />
-        <figure>
-          <img src="assets/images/case-study/5-steps-to-install.png" class="case-study-image large-image" />
-          <figcaption>Fig. 29: Five Steps to Installing Dendro</figcaption>
-        </figure>
-        <br />
-        <p>
-          Dendro is an npm package, which means the first step is to download and install it just like any other npm
-          package. Make sure to use the <code class="command">-g</code> flag so that the command is available throughout
-          your local environment.
-        </p>
-        <br />
-        <p>
-          The second step is to install the data collecting agent, Vector, on the local machine. Dendro provides a
-          command which helps the user to install Vector given their particular package manager.
-        </p>
-        <br />
-        <p>
-          The third step is to configure Dendro for that server using the <code class="command">dendro configure</code>
-          command. This step results in
-          two configuration files: 1. a file that Vector uses to monitor the selected services on that machine, 2. A
-          file that Dendro uses to deploy the pipeline, including AWS credentials and database tables that match the
-          selected services for that server.
-        </p>
-        <br />
-        <figure>
-          <img src="assets/images/case-study/dendro-configure.gif" class="case-study-image demo" />
-          <figcaption>Fig. 30: Dendro Configure</figcaption>
-        </figure>
-        <br />
-        <p>
-          Dendro now knows which services the user wants to monitor on their machine. The fourth step is to actually
-          build the
-          pipeline by running the command <code class="command">dendro deploy</code>. Again, the pipeline provides a
-          centralized location where all
-          of the monitoring data from the user's various servers will live.
-        </p>
-        <br />
-        <br />
-        <figure>
-          <img src="assets/images/case-study/dendro-deploy.gif" class="case-study-image demo" />
-          <figcaption>Fig. 31: Dendro Deploy</figcaption>
-        </figure>
-        <br />
-        <p>
-          Running the dendro deploy command sets up the AWS infrastructure, including the IAM role, the Kinesis Firehose
-          stream, the S3 bucket, the Lambda function, and the Timestream database with the correct tables.
-        </p>
-        <br />
-        <p>
-          It asks if the user’s AWS credentials have the appropriate permissions, providing a link where they can
-          confirm that they do, then it asks if they want to set up alerting, which will send them an email under
-          specific failure conditions.
-        </p>
-        <br />
-        <br />
-        <figure>
-          <img src="assets/images/case-study/dendro-teardown.gif" class="case-study-image demo" />
-          <figcaption>Fig. 32: Dendro Teardown</figcaption>
-        </figure>
-        <br />
-        <p>
-          The user can run the teardown command to remove all deployed AWS services. It will ask them to confirm that
-          the user
-          wants to delete the resources. The teardown command is for ease of use and to ensure that there are no extra
-          AWS services floating around in the user’s account.
-        </p>
-        <br />
-        <br />
-        <figure>
-          <img src="assets/images/case-study/vector-run.gif" class="case-study-image demo" />
-          <figcaption>Fig. 33: Running Vector</figcaption>
-        </figure>
-        <br />
-        <p>
-          Now that the pipeline is set up, the user is ready to send data to it. They do this by running vector.
-        </p>
-        <br />
-        <p>
-          <!-- TODO: stylize code -->
-          The user starts Vector by running the command <code class="command">vector --config vector-config.toml</code>,
-          passing in the
-          configuration file generated from the configure command. This file ensures that they are monitoring the
-          appropriate services on this machine. Vector is now streaming logs and metrics to the AWS pipeline.
-        </p>
-        <br />
-
-        <h3>6.2 Using Dendro</h3>
-
-        <br />
-        <p>
-          Now that the user has data passing through to the database, they can visit the frontend, which is accessed by
-          running
-          the command dendro start:server from any computer that has dendro installed and configured, and then visiting
-          localhost port 3000 on a browser.
-        </p>
-        <br />
-        <figure>
-          <img src="assets/images/case-study/frontend-home.gif" class="case-study-image demo" />
-          <figcaption>Fig. 34: Frontend Home</figcaption>
-        </figure>
-        <br />
-        <p>
-          There are three pages listed on the sidebar. A homepage, a charts page, and a query page. On the homepage, the
-          user can see what services are being monitored and check that the pipeline is successfully writing records to
-          the database.
-        </p>
-        <br />
-        <br />
-        <figure>
-          <img src="assets/images/case-study/frontend-charts.gif" class="case-study-image demo" />
-          <figcaption>Fig. 35: Frontend Charts</figcaption>
-        </figure>
-        <br />
-        <p>
-          On the charts page, the user sees real-time data for the services currently being monitored. This includes key
-          metrics from the <a href="https://grafana.com/blog/2018/08/02/the-red-method-how-to-instrument-your-services/"
-            target="_blank">RED method</a>, such as the rate of requests, the number of errors among those requests, and
-          the duration of the requests.
-        </p>
-        <br />
-        <br />
-        <figure>
-          <img src="assets/images/case-study/frontend-query.gif" class="case-study-image demo" />
-          <figcaption>Fig. 36: Frontend Query</figcaption>
-        </figure>
-        <br />
-        <p>
-          The query page enables the user to query the Timestream database. In this example, they query the nginx access
-          logs
-          for all 500 errors that occurred in the last 2 hours. A user can also export the data and begin to drill down
-          to find the source of the problem.
-        </p>
-        <br />
-
-
-        <!-- Section 7 -->
-        <h2 class="h2">7 Implementation Challenges</h2>
-        <p>
-          We had to overcome 3 major technical challenges while building Dendro.
-
-          <!-- TODO: Bullet points -->
-          AWS: the optimistic Response object
-          Real-time data transformations
-          What does Dendro visualize?
-        </p>
-        <br />
-
-        <h3>7.1 AWS: the optimistic Response object</h3>
-        <p>
-          One major challenge the team faced while building the <code>deploy</code> and <code>teardown</code> commands
-          was related to spinning up or destroying AWS services that depend on the existence of another service in order
-          to successfully deploy or that cannot be destroyed while another service depends on it. <code>deploy</code>
-          fires off 37 API calls, while <code>teardown</code> executes 25.
-        </p>
-        <br />
-        <figure>
-          <img src="assets/images/case-study/api-calls.png" class="case-study-image" />
-          <figcaption>Fig. 37: The services spun up/destroyed by Dendro's <code>deploy</code> and <code>teardown</code>
-            commands</figcaption>
-        </figure>
-        <br />
-        <p>
-          For example, certain services couldn’t be spun up before the requisite IAM permissions were created or
-          attached, or Timestream tables couldn’t be created until the database was successfully created.
-        </p>
-        <br />
-        <p>
-          When an HTTP request is dependent on a successful response to a previous one, you expect to be able to make
-          the first request, wait to receive the response, and only then send the second request.
-        </p>
-        <br />
-        <figure>
-          <img src="assets/images/case-study/optimistic-response.png" class="case-study-image" />
-          <figcaption>Fig. 38: Expected behavior when a second async request is dependent on a successful response to a
-            first</figcaption>
-        </figure>
-        <br />
-        <p>
-          When using the AWS SDK, AWS returns an AWS Response object that doesn’t necessarily indicate that the service
-          has been created! So when you predicate the next step on the receipt of the Response object and send the
-          subsequent request, it often fails.
-        </p>
-        <br />
-        <figure>
-          <img src="assets/images/case-study/long-polling.gif" class="case-study-image" />
-          <figcaption>Fig. 39: Our solution to premature responses: implementing long-polling (with exponential backoff)
-          </figcaption>
-        </figure>
-        <br />
-        <p>
-          To overcome this, we implemented long polling AWS with exponential back off. Dendro asks Amazon repeatedly
-          whether the operation has been completed, increasing the time between failed polls at an exponential rate in
-          order to avoid overwhelming the server or hitting a rate limit. Once the AWS Response object returns a state
-          that is not <span class="bold">LOADING</span>, Dendro can then react to that state change accordingly.
-        </p>
-        <br />
-
-        <h3>7.2 Transforming data in real-time</h3>
-        <p>
-          How does Dendro take raw, plain-text logs and prepare them for insertion to a time-series database? To achieve
-          this, the team had to build in two separate data transformation steps throughout the pipeline. The first
-          happens at the point of collection, while the second happens in the Lambda function triggered by Kinesis Data
-          Firehose writing to the S3 bucket. We have already discussed how both work but to reiterate:
-        </p>
-        <br />
-        <figure>
-          <img src="assets/images/case-study/apache-log.png" class="case-study-image" />
-          <figcaption>Fig. 40: Sample plaintext log line from a web server</figcaption>
-        </figure>
-        <br />
-        <p>
-          Logs are typically emitted as plain-text. During the log collection process, Dendro takes some steps to
-          prepare it for insertion into the database. It first has to parse the record using a regex pattern written
-          specifically to match this particular log format. Parsing that plain-text log with such a regex pattern gives
-          us a structured JSON object. Dendro then injects a `type` key into the JSON object to note the record source
-          and transport it off the host server.
-        </p>
-        <br />
-        <p>
-          The second data transformation happens in the Lambda function where Dendro takes an octet-stream, parses it,
-          and then writes to the database.
-        </p>
-        <br />
-        <p>
-          Part of the appeal of the Kinesis Data Firehose is that it can accept data from any source: JSON, XML and
-          numerous other formats. Firehose just accepts that data without checking or enforcing its validity.
-          Unfortunately, the easiest way to accept any data is to convert it to binary and keep appending it to a binary
-          blob. This is exactly what Firehose does and where it converts the JSON Dendro built while collecting records
-          into an octet-stream.
-        </p>
-        <br />
-        <p>
-          We first start by converting the binary data into a string. This looks similar to an array of JSON records but
-          is missing a few tokens (brackets, commas, etc.) making it unparsable/invalid JSON.
-        </p>
-        <br />
-        <figure>
-          <img src="assets/images/case-study/binary-to-json.gif" class="case-study-image" />
-          <figcaption>Fig. 41: Using regex to parse a string back to JSON</figcaption>
-        </figure>
-        <br />
-        <p>
-          We can use regex to insert those missing tokens and then successfully parse the octet-stream back into JSON.
-          Once the record is parsable, Dendro checks that the <code>type</code> key that was injected during the first
-          data transformation phase. This key helps us identify the source of the record, what data to pluck out and
-          store and what table within Timestream to insert it in.
-        </p>
-        <br />
-
-        <h3>7.3 What to Visualize</h3>
-        <p>
-          When Naptime’s servers are down and they view the Dendro dashboard, what are the key metrics they need to see
-          in order to resolve their outage? The challenge here wasn’t in writing SQL queries, but actually taking a step
-          back and deciding how to represent what Dendro tracks and measures visually.
-        </p>
-        <br />
-        <p>
-          There are some main schools of thought on what metrics matter most for monitoring, named things like “The Four
-          Golden Signals”, “USE”, and the “RED Method”. Tom Wilkie, a former site reliability engineer (SRE) at Google,
-          created the microservice-oriented monitoring philosophy called RED. It focuses on rate, errors & duration, and
-          the team found that it had the right balance of simplicity and specificity for our use-case, as well as that
-          it was particularly well suited to time-series data.
-
-          <!-- TODO: bullet points -->
-          <span class="bold">“Rate”</span> refers to the number of requests per second a service is receiving.
-          <span class="bold">“Errors”</span> is the number of the requests that receive an error response from the
-          service.
-          <span class="bold">“Duration”</span> is the length of time the service takes to complete a response to a
-          request.
-        </p>
-        <br />
-        <p>
-          We found that RED matched our use case nicely, perhaps due to the fact that microservice architectures are
-          typically distributed systems.
-        </p>
-        <br />
-        <p>
-          Tom Wilkie has written that “understanding the error rate, the request rate, and then some distribution of
-          latency gives you a nice, consistent view of how your architecture is behaving.” That’s exactly what we wanted
-          Dendro to provide: a consistent view of how your architecture is behaving over time.
-        </p>
-        <br />
-
-
-        <!-- Section 8 -->
-        <h2 class="h2">8 Future Work</h2>
-        <p>
-          Of course, an open source project is never fully finished. While we think Dendro is currently
-          feature-complete, ready for people to use and immediately benefit from, there are certain future work items
-          that would strengthen the overall framework.
-        </p>
-        <br />
         <ul>
           <li>
-            We would like to provide our users the ability to inject more and more varied custom transforms into the
-            pipeline. It’s possible as of now if they go and edit the configuration files, but that’s manual and Dendro
-            is all about reducing toil.
+            breaking apart their monolith into microservices
           </li>
           <li>
-            We’d also like to provide built-in support for MySQL, which Vector does not currently support as a native
-            source but which they do plan to build as part of a future milestone.
+            adopting a multi-cloud, or hybrid cloud, strategy
+          </li>
+        </ul>
+        <br />
+        <h3>2.2 Breaking Apart a Monolith</h3>
+        <p>
+          If we look at their monolithic application in more detail, we can see that they've got some distinct, logical services
+          already - in a monolith, these could be classes in an object-oriented language, but otherwise they are just portions of
+          the code-base with a distinct responsibility.
+        </p>
+        <br />
+        <figure>
+          <img src="assets/images/case-study/monolith_2.png" class="case-study-image" />
+          <figcaption>Fig. 2: TODO</figcaption>
+        </figure>
+        <br />
+        <p>
+          Adopting a microservice approach would mean that rather than portions of the same code-base, services are discrete and are
+          only concerned with their own processes while still being able to communicate with other services. One of the primary benefits
+          of this approach is that it allows services to scale and consume resources independently of one another.
+        </p>
+        <br />
+        <figure>
+          <img src="assets/images/case-study/microservice_1.png" class="case-study-image" />
+          <figcaption>Fig. 3: TODO</figcaption>
+        </figure>
+        <br />
+        <h3>2.3 Adopting a Multi-Cloud Strategy</h3>
+        <p>
+          A multi-cloud strategy means utilizing services provided by multiple cloud providers. There are many reasons a company might
+          adopt this approach, but some common ones are:
+        </p>
+        <ul>
+          <li>
+            avoiding single-vendor lock-in
           </li>
           <li>
-            And finally, on the dashboard, we would like to provide syntax highlighting for SQL queries as well as more
-            out of the box graphs and visualizations.
+            operational resiliency
+          </li>
+          <li>
+            security and governance
+          </li>
+          <li>
+            emerging technologies
+          </li>
+        </ul>
+        <br />
+        <p>
+          Because of this, many companies have already adopted a multi-cloud strategy[1]. However, adopting this strategy can be difficult,
+          especially for smaller companies. Common inhibitors for teams are:
+        </p>
+        <ul>
+          <li>
+            lack of in-house skills
+          </li>
+          <li>
+            hybrid cloud complexity
+          </li>
+          <li>
+            complexity of networking
+          </li>
+          <li>
+            lack of tooling
+          </li>
+        </ul>
+        <br />
+        <p>
+          Many small companies also utilize a <i>Platform-as-a-Service</i>, which typically don't provide the flexibility needed for
+          multi-cloud deployments.
+        </p>
+        <br />
+        <!-- Section 3 -->
+        <h2 class="h2">3 Platform-as-a-Service</h2>
+
+        <h3>3.1 ACME: Service Extraction</h3>
+        <p>
+          Now that we're familiar with ACME's digital transformation plans, let's see how their development team would go about
+          implementing these changes. The first thing they're going to do is identify which service to extract out of the monolith.
+          They want their users to be able to log in to 3rd party websites with their ACME accounts; however, this means that a lot
+          of requests coming in <i>just</i> for authentication could degrade their overall application's performance.
+        </p>
+        <br />
+        <figure>
+          <img src="assets/images/case-study/monolith_3.png" class="case-study-image" />
+          <figcaption>Fig. 4: TODO</figcaption>
+        </figure>
+        <br />
+        <p>
+          To solve this, they'll extract the auth service out of the monolith, and they'll want to deploy it where the service will be
+          highly available. With that in mind, let's take a look at what the deployment pipeline could look like with a multi-cloud approach.
+        </p>
+        <br />
+
+        <h3>3.2 Deployment Pipeline</h3>
+        <figure>
+          <img src="assets/images/case-study/deployment_pipeline.png" class="case-study-image" />
+          <figcaption>Fig. 5: TODO</figcaption>
+        </figure>
+        <br />
+        <p>
+          First, a software development team plans, architects, and develops an application.
+        </p>
+        <br />
+        <p>
+          Then, the source code goes through some sort of build process to produce a runnable artifact. That could be containerizing
+          the application to provide a slim, low-footprint environment for the application to execute in using Docker. Or, it could be
+          compiling code from a frontend framework like React into static files using a package manager like Yarn.
+        </p>
+        <br />
+        <p>
+          The artifact from the build phase is then used as the application is deployed to the proper hosting solution. There are many
+          solutions out there: such as Google Cloud Run for container orchestration, AWS EC2 for virtual machines, and AWS S3 for static file hosting.
+        </p>
+        <br />
+        <p>
+          Finally, any necessary resources for public consumption are configured to interface with an existing deployment - such as setting up an
+          application load balancer to direct network traffic, or configuring a content distribution network like AWS Cloudfront to distribute
+          static files stored in S3.
+        </p>
+        <br />
+        <p>
+          All this complexity can be difficult to both learn and manage, especially for small development teams with little DevOps experience.
+          This is why Platforms as a Service have arisen.
+        </p>
+        <br />
+
+        <h3>3.3 PaaS v. Other Solutions</h3>
+        <p>
+          A platform-as-a-service, or PaaS, abstracts away the complexity of the build, deploy, and release cycle. This allows developers to simply
+          focus on their code. Examples of a PaaS are Heroku, and cloud provider-specific platforms like Google's App Engine and Amazon's Elastic Beanstalk.
+        </p>
+        <br />
+        <p>
+          When using a PaaS, developers generally trade control and configuration away for ease-of-use. Let's look at PaaS compared to other options,
+          like on-premise servers and Infrastructure-as-a-Service.
+        </p>
+        <br />
+        <figure>
+          <img src="assets/images/case-study/paas_compare.png" class="case-study-image" />
+          <figcaption>Fig. 6: TODO</figcaption>
+        </figure>
+        <br />
+        <p>
+          With on-premise servers, you have the most control and configurability of your environment - from your application all the way down to
+          the bare-metal server - however, with that comes a lot of responsibility. With physical servers come physical maintenance - ensuring your
+          server room is properly ventilated and secured are very important to ensuring your services remain stable.
+        </p>
+        <br />
+        <p>
+          Next, there is Infrastructure-as-a-Service, or IaaS. As the name implies, the service you're paying for is the management and control of
+          those physical servers. You no longer need the overhead of a server room and maintenance, simply spin up a virtual machine and go from there.
+          However, for simply deploying an application, there's still a lot of management and configuration overhead.
+        </p>
+        <br />
+        <p>
+          This is why PaaS exists - developers can concern themselves with their applications and data, while the platform handles the infrastructure under the hood.
+        </p>
+        <br />
+
+        <h3>3.4 Internal PaaS</h3>
+        <p>
+          Let's revisit the auth service ACME wants to deploy. They're allowing their users to log in to 3rd party websites with their ACME accounts; however, they know
+          it needs to be highly available since they can't predict the usage patterns of that 3rd party website.
+        </p>
+        <br />
+        <p>
+          ACME has decided they want to use a PaaS for ease-of-use. They've decided on Google's App Engine, which will handle the build, deploy, and release cycle for
+          their auth service. Under the hood, Google uses their own Cloud Run container orchestrator - which is known to be highly available and scalable.
+        </p>
+        <br />
+        <p>
+          But now, ACME has another issue. As part of their payment logic, they process payment data, generate invoices, and store them on a local file server. However,
+          their local file server is running out of disk space, and they don't want to keep buying hard drives.
+        </p>
+        <br />
+        <figure>
+          <img src="assets/images/case-study/monolith_5.png" class="case-study-image" />
+          <figcaption>Fig. 7: TODO</figcaption>
+        </figure>
+        <br />
+        <p>
+          While they could utilize Google's Cloud Storage, they don't want to get locked in to a single vendor so early on in their service extraction process - so,
+          they've decided to migrate their files to Amazon's S3. However, this also means they need to modify their payment service.
+        </p>
+        <br />
+        <figure>
+          <img src="assets/images/case-study/monolith_6.png" class="case-study-image" />
+          <figcaption>Fig. 8: TODO</figcaption>
+        </figure>
+        <br />
+        <p>
+          They've decided to design a data pipeline - the application will send invoice data to an AWS Lambda, which will perform any pre-processing before sending
+          it to Firehose, which then streams it into their S3 buckets. As you can see below, with just two services extracted, the application topology is beginning to become
+          more and more complex. They've got one service running on Google Cloud Run via App Engine, and their data pipeline on AWS.
+        </p>
+        <br />
+        <figure>
+          <img src="assets/images/case-study/acme_arch_1.png" class="case-study-image" />
+          <figcaption>Fig. 9: TODO</figcaption>
+        </figure>
+        <br />
+        <p>
+          The development team at ACME is getting frustrated with the separated deployment pipelines, and wish they could manage all of this in a unified platform - they've seen
+          companies build their own platform before and are toying with the idea themselves.
+        </p>
+        <br />
+        <p>
+          Companies like Netflix[2] and Atlassian[3] <i>have</i> built their own platforms. The reasoning behind that is as you initially set up IaaS offerings, you think that managing them will
+          be as simple as setting up some load balancers and pointing them to an autoscaling group of virtual machines, which have access to your resources.
+        </p>
+        <br />
+        <p>
+          However the reality is that, especially as your application grows, this topology becomes increasingly complex to manage. It's difficult to track down exactly which
+          application is running on which resource, which deployments may be stale and ready to tear down, and overall takes a dedicated team to truly manage
+          in an efficient manner. Both Netflix and Atlassian are large enterprises that can afford to dedicate teams to their platforms - ACME <i>isn't</i>.
+        </p>
+        <br />
+        <p>
+          And <i>that</i> is why we built Pilot - a tool that can assist small development teams without the resources and expertise that
+          larger companies might have at their disposal to tackle complex multi-cloud deployments.
+        </p>
+
+        <!-- Section 4 -->
+        <h2 class="h2">4 Overview of Pilot</h2>
+        <h3>4.1 How Does Pilot Help Teams?</h3>
+        <h3>4.2 What's in Pilot?</h3>
+
+        <!-- Section 5 -->
+        <h2 class="h2">5 Who Should Use Pilot?</h2>
+
+        <!-- Section 6 -->
+        <h2 class="h2">6 Pilot's Architecture</h2>
+
+        <!-- Section 7 -->
+        <h2 class="h2">7 Installing and Using Pilot</h2>
+
+        <!-- Section 8 -->
+        <h2 class="h2">8 Design Decisions</h2>
+        <p>
+          Our design intention while developing Pilot was to make it easy for a small team of developers
+          to focus on writing code and deploying their applications with a cloud-agnostic approach. They
+          will not have to worry about the underlying infrastructure, just that their applications are made
+          available for consumption while still having control of the platform and choice of provider. The
+          main design decisions centered around using Waypoint as a deployment tool and how to install it
+          to handle remote operations.
+        </p>
+        <br />
+        <h3>8.1 Extending Waypoint</h3>
+        <p>
+          An integral decision for Pilot was to extend Waypoint. It is a fairly new product in the open
+          source deployment space but gives you various options around image builds and deploying applications
+          to multiple cloud providers. Using it as base for Pilot's design provided several benefits.
+        </p>
+        <br />
+        <h4>Existing User Interface</h4>
+        <br />
+        <p>
+          We were able to focus on CLI and infrastructure development since Waypoint has an existing user
+          interface. It is simple in features and does not require a large time investment to get the hang of. 
+        </p>
+        <br />
+        <h4>Custom Plugin Ecosystem</h4>
+        <br />
+        <p>
+          The Waypoint SDK allowed us to develop our own custom plugins in Go. This enabled us to add in
+          static web hosting as a deployment option using our Cloudfront and Cloud CDN plugins.
+        </p>
+        <br />
+        <h4>Trusted Open-Source Company</h4>
+        <br />
+        <p>
+          Waypoint was developed by HashiCorp which we considered to be a trusted open-source company.
+          They are well known and have products that many companies have incorporated into their multi-cloud strategies. 
+        </p>
+        <br />
+        <h4>Familiarity with HashiCorp Configuration Language</h4>
+        <br />
+        <p>
+          Developers that have used HashiCorp's products are also familiar with their HashiCorp
+          Configuration Language. You would recognize it if you have used their products like
+          Terraform, which is a popular infrastructure automation tool. The syntax of the
+          configuration files is meant to be easy to read and write.
+        </p>
+        <br />
+
+        <h3>8.2 Handling Remote Waypoint Operations</h3>
+        <p>
+          Remote collaboration is an important aspect of a PaaS but can have some roadblocks when configuring your own.
+        </p>
+        <br />
+        <h4>Steps to Set Up Waypoint</h4>
+        <br />
+        <p>
+          Currently with Waypoint it is difficult to use it as a remote management option.
+          If a team wanted to integrate Waypoint into their platform, they would have to consider a few design decisions of their own. 
+        </p>
+        <br />
+        <figure>
+          <img src="assets/images/case-study/waypoint_steps.png" class="case-study-image" />
+          <figcaption>Fig. X: TODO</figcaption>
+        </figure>
+        <br />
+        <p>
+          First, you would need to provision the necessary infrastructure for remote operations
+          which could be an AWS EC2 virtual machine. Install and configure dependencies such as
+          Waypoint and Docker to be able to deploy applications to the cloud. Set up networking
+          and rules for the EC2 instance to restrict access to your developers for remote management. 
+        </p>
+        <br />
+        <p>
+          The Waypoint server would also need the proper permissions such as service credentials
+          for all cloud providers you would want to deploy to. Additionally, Waypoint's documentation
+          recommends configuring Docker-in-Docker for a remote Waypoint runner to handle building
+          and pushing images to a container registry. Finally, you have to configure your local
+          environment to communicate with the established remote pipeline. 
+        </p>
+        <br />
+        <p>
+          We believed automating this process would remove a large pain point for our users.
+        </p>
+        <br />
+        <h4>Using a Remote Waypoint Server</h4>
+        <br />
+        <p>
+          We decided to use a remote Waypoint server to serve as the backbone of Pilot's
+          deployment operations to multiple cloud providers. But you might be wondering:
+          why was it a good option to create a remote Pilot server in the first place?
+        </p>
+        <br />
+        <figure>
+          <img src="assets/images/case-study/local_waypoint.png" class="case-study-image" />
+          <figcaption>Fig. X: TODO</figcaption>
+        </figure>
+        <br />
+        <p>
+          As you can see, a simple Waypoint configuration is much easier when set up
+          locally. All that is requires is a Waypoint binary and a server container
+          running on your local machine. A runner container is not necessary for taking
+          on deployment jobs. The Waypoint binary will serve as the runner in this
+          type of configuration which is less management overhead. 
+        </p>
+        <br />
+        <figure>
+          <img src="assets/images/case-study/remote_waypoint.png" class="case-study-image" />
+          <figcaption>Fig. X: TODO</figcaption>
+        </figure>
+        <br />
+        <p>
+          A remote Pilot server would enable us to provide increased flexibility for
+          our users. The Pilot server can be provisioned on our supported cloud providers
+          to easily allow collaboration with a team. Users will not have to configure
+          their local machine to be accessible on a network and you get a centralized
+          management server for project and application deployments. 
+        </p>
+        <br />
+        <p>
+          We also take away the concern of installing local dependencies for the
+          deployment lifecycle. You will not have to install Docker, Pack, or any
+          additional tooling since they are available on the Pilot server. However
+          we do provide the flexibility of managing the Pilot server through SSH access.
+        </p>
+        <br />
+        <p>
+          Having a remote Pilot server is good and all but how should we install
+          the Waypoint server to it? Waypoint allows installing servers and runners
+          using Docker, Kubernetes, and even HashiCorp’s Nomad orchestration service.
+          The options came down to Docker and Kubernetes as an installation platform
+          for our containers. 
+        </p>
+        <br />
+        <figure>
+          <img src="assets/images/case-study/k8s_cluster.png" class="case-study-image" />
+          <figcaption>Fig. X: TODO</figcaption>
+        </figure>
+        <br />
+        <p>
+          With Kubernetes orchestration we could spin up a cluster that would give us
+          the benefits of high availability and scalability. Having multiple runners
+          set up on a cluster would be able to handle concurrent deployments of
+          applications. This would be a value add for teams wanting simultaneous deployments
+          without a wait time. A cluster could also have self healing capabilities
+          to bring containers back up if they were to go down. 
+        </p>
+        <br />
+        <p>
+          That all sounds great but Kubernetes has some drawbacks for users new to it.
+        </p>
+        <br />
+        <p>
+          Kubernetes will introduce extra overhead for smaller development teams. It is
+          difficult to understand and implement as you will be spending a lot of time in
+          documentation to wrap your head around proper configuration and management.
+          With that in mind it is not the best option if you want to get up and running quickly.
+        </p>
+        <br />
+        <p>
+          Kubernetes clusters can also be difficult to maintain without a dedicated DevOps engineer or team member who has DevOps experience. 
+        </p>
+        <br />
+        <figure>
+          <img src="assets/images/case-study/pilot_server.png" class="case-study-image" />
+          <figcaption>Fig. X: TODO</figcaption>
+        </figure>
+        <br />
+        <p>
+          With Pilot we decided to make the Pilot server virtual machine provision a single
+          server and runner container on Docker as a platform. Through our testing as a
+          small development team, a single Waypoint server and runner was enough for our needs.
+          This makes it easier for users as they will only have to manage a single virtual machine
+          along with a couple of containers and not the headache of a Kubernetes cluster on top of it. 
+        </p>
+        <br />
+        <p>
+          Runners are considered an advanced configuration but you could spin up more on the
+          Pilot server if needed with documentation available on the Waypoint site.
+        </p>
+        <br />
+
+
+        <!-- Section 9 -->
+        <h2 class="h2">9 Implementation Challenges</h2>
+        <p>
+          There were three major challenges we ran into while developing Pilot. Creating
+          Waypoint plugins, building out a custom image capable of handling our Waypoint
+          operations, and whether to use Docker-in-Docker for image builds.
+        </p>
+        <br />
+        <h3>9.1 Creating Waypoint Plugins</h3>
+        <p>
+          Plugins are binaries written in Go that implement one or more Waypoint components.
+          Waypoint components consist of the deployment lifecycle such as building artifacts
+          and pushing them to a registry. You can think of them as middleware that Waypoint
+          injects into the lifecycle. 
+        </p>
+        <br />
+        <p>
+          When we started learning about Waypoint, we realized that many of the built in
+          plugins were geared towards deploying full-stack or backend applications. We felt
+          there was an opportunity for plugins that were able to deploy static assets from
+          something like a React application. So we were happy to see Waypoint provides an
+          SDK that allow developers to create their own plugins. You can create plugins that
+          execute for the entire build, deploy, release cycle or individual parts of it. 
+        </p>
+        <br />
+        <p>
+          Pilot has several plugins created for your use that come baked into our custom Waypoint image.
+        </p>
+        <ul>
+          <li>
+            A Yarn plugin executes during the build phase to bundle frontend applications into static files. 
+          </li>
+          <li>
+            An Amazon Cloudfront plugin that interfaces during the deploy and release phases.
+            This plugin will upload static files to S3 and release a static site to a Cloudfront distribution.
+          </li>
+          <li>
+            Finally, a Cloud CDN plugin for GCP that works like the Cloudfront plugin by uploading static files
+            to Cloud Storage and releasing on Cloud CDN.
+          </li>
+        </ul>
+        <br />
+        <p>
+          Developing these plugins introduced their own challenges. For one, the documentation for creating plugins
+          was a bit light on context. It and the associated tutorial focuses mainly on the build phase. Since the
+          information for additional components was more conceptual we needed to reference source code of the built
+          in plugins, custom plugins from other developers, and trial and error to get the functionality we wanted. 
+        </p>
+        <br />
+        <figure>
+          <img src="assets/images/case-study/sdk_table.png" class="case-study-image" />
+          <figcaption>Fig. X: TODO</figcaption>
+        </figure>
+        <br />
+        <p>
+          Another problem was SDK support depending on the cloud provider. We found the AWS SDK to be robust and
+          easy to work with. Anything we needed to provision for deploying to Cloudfront could be done using it. 
+        </p>
+        <br />
+        <p>
+          The GCP SDK however was limited in some ways. Creating Cloud Storage buckets and uploading assets was
+          supported but provisioning the resources needed for a Cloud CDN release was not. Additionally, deleting
+          certain resources using the SDK was also partially supported which was a drawback when wanting to
+          teardown those resources automatically. 
+        </p>
+        <br />
+        <figure>
+          <img src="assets/images/case-study/gcp_wrapper.png" class="case-study-image" />
+          <figcaption>Fig. X: TODO</figcaption>
+        </figure>
+        <br />
+        <p>
+          We decided to use a combination of the SDK with the gcloud CLI to give us the same functionality as
+          the Cloudfront plugin. We created a wrapper for gcloud commands to give a familiarity and usability
+          as an SDK and it worked out fine for our needs. 
+        </p>
+        <br />
+        <p>
+          However, needing the gcloud CLI installed created a dependency on our Waypoint containers
+          when deploying front-end applications using our Cloud CDN plugin. 
+        </p>
+        <br />
+        <h3>9.2 Building a Custom Docker Image</h3>
+        <p>
+          By default Waypoint uses HashiCorp's Waypoint image which can be found publicly available
+          on Docker Hub. It includes the Waypoint binary and built-in plugins developed by HashiCorp.
+          But this introduced a problem for our team when it came to adding our own plugins. 
+        </p>
+        <br />
+        <figure>
+          <img src="assets/images/case-study/waypoint_binary_1.png" class="case-study-image" />
+          <figcaption>Fig. X: TODO</figcaption>
+        </figure>
+        <br />
+        <p>
+          We wanted to include our custom plugins for Yarn builds and Cloud CDN and Cloudfront
+          deployments. At this time, Waypoint does not currently have a community plugin system
+          for making custom plugins generally available. Our plugins also had their own
+          dependencies like NodeJS and Yarn to build static files or gcloud CLI for Cloud CDN provisioning.
+        </p>
+        <br />
+        <figure>
+          <img src="assets/images/case-study/waypoint_binary_2.png" class="case-study-image" />
+          <figcaption>Fig. X: TODO</figcaption>
+        </figure>
+        <br />
+        <p>
+          We decided to create our own custom Waypoint development and release images that can
+          be pulled from Docker Hub freely. To do this we had to reverse engineer Waypoint's
+          default image and source code to figure out how Waypoint starts the server and runner
+          containers but also what packages the Waypoint image had internally. 
+        </p>
+        <br />
+        <p>
+          Our investigation found the image was pretty much a barebones Linux distribution
+          limited to the Bourne shell. Not much else stood out in terms of dependencies for
+          normal Waypoint installations. This meant using that image as a base would require
+          installing multiple standard Linux packages you would expect in our Dockerfile. 
+        </p>
+        <br />
+        <p>
+          We initially started off with a standard Node image and only needed to install
+          gcloud as a dependency. This worked fine but the resulting image was unnecessarily
+          large at approximately ~1.6 gigs. The Node image has other packages installed we really
+          did not need. Waypoint server installs took longer as a result. 
+        </p>
+        <br />
+        <p>
+          We were keen on downsizing the image build as much as possible and attempted multiple
+          prototypes. We discovered an image that Google maintains which contains gcloud and
+          decided to use it as a base for our custom image. This cut down the bloat by 50%
+          and increased performance of our Waypoint server installs using Pilot's image. 
+        </p>
+        <h3>9.3 Docker-in-Docker Image Builds</h3>
+        <p>
+          Another challenging aspect of remote Waypoint operations is executing image builds
+          and pushes to a container registry from a runner container. There are several so
+          called Docker-in-Docker methods that one may use to accomplish this with a few outlined below. 
+        </p>
+        <br />
+        <figure>
+          <img src="assets/images/case-study/docker_1.png" class="case-study-image" />
+          <figcaption>Fig. X: TODO</figcaption>
+        </figure>
+        <br />
+        <p>
+          The first method uses the <code>docker.sock</code> which is the default Unix socket that
+          the Docker daemon listens to. From a Docker host you run a command that starts a container
+          with a Docker binary installed and mount the host's socket path to allow running Docker
+          commands from within the container. When commands are executed, all operations happen on
+          the host such as image builds, pushes, and container starts. Any started containers become
+          siblings of the container issuing the commands.
+        </p>
+        <br />
+        <figure>
+          <img src="assets/images/case-study/docker_2.png" class="case-study-image" />
+          <figcaption>Fig. X: TODO</figcaption>
+        </figure>
+        <br />
+        <p>
+          The second method uses an outer container started from an official Docker-in-Docker image
+          that Docker maintains. A container must be started in privileged mode which can have
+          adverse side effects. 
+        </p>
+        <br />
+        <p>
+          The container will get full access to all devices on the host. Consequently this is
+          the same access to the host as any processes running outside of containers which can
+          be a security flaw if the privileged container were to be compromised. 
+        </p>
+        <br />
+        <p>
+          All Docker operations would occur within the container. Images would be built and
+          stored on the container which is not great when containers should be lightweight.
+          Started containers would become children and nested within the outer container and
+          this creates additional management overhead with the amount of abstraction. 
+        </p>
+        <br />
+        <p>
+          Evaluating Docker-in-Docker generated its own problems. It is generally not recommended
+          due to the issues mentioned previously and more but it is meant for niche use cases such
+          as developing for Docker or using it in continuous integration. Even using it in terms
+          of continuous integration there are better options out there. 
+        </p>
+        <br />
+        <p>
+          We also did not want to clutter our custom image with a Docker installation if all
+          that was needed is build and push capabilities for deployments. Another issue is
+          that Waypoint handles starting the server and runner containers, so there is no
+          control over mounting the <code>docker.sock</code> as a volume, as seen in the first method, nor
+          starting a container in privileged mode with the second method. 
+        </p>
+        <br />
+        <figure>
+          <img src="assets/images/case-study/docker_3.png" class="case-study-image" />
+          <figcaption>Fig. X: TODO</figcaption>
+        </figure>
+        <br />
+        <p>
+          Our solution was to make the host, being our Pilot server, a Docker server and
+          expose Docker as an API for the runner container to consume. This looks and feels
+          like Docker-in-Docker but is not since we do not need a Docker installation on
+          the container. It also isolates Docker operations to the host where Docker is
+          installed. All you need for the runner was to set a <code>DOCKER_HOST</code> environment
+          variable referencing the host address and port. 
+        </p>
+        <br />
+        <p>
+          When the container needs to build and push images it makes requests to the API
+          without needing Docker installed itself. 
+        </p>
+        <br />
+        <p>
+          This worked to be a viable option but it introduced another problem and that was
+          malicious attackers scanning for misconfigured Docker APIs. With a Docker server
+          port completely exposed it is essentially giving root access to the host machine. 
+        </p>
+        <br />
+        <!-- TODO figure -->
+        <br />
+        <p>
+          We ran into a group called TeamTNT and they take over Docker processes, install
+          their image, and start a container. The container is used to compromise the host
+          machine by mounting the host's <code>/bin/sh</code> path as a volume and using the <code>chroot</code> command
+          to run a process on that path. Typically they will implement a crypto miner on the host machine. 
+        </p>
+        <br />
+        <p>
+          Various issues were raised by this exploit during development and testing
+          application deployments. A possible solution would be to use TLS so the
+          requester would have to be authorized. Another solution, and one we chose,
+          was to lock down the configured Docker server port 2375 with a security group
+          or firewall rule on the respective cloud provider. This way the only allowed
+          source traffic has to come from the same address as the server and keeps the
+          runner container on a Docker network.
+        </p>
+        <!-- Section 10 -->
+        <h2 class="h2">10 Future Work</h2>
+        <p>
+          There are many features we would like to add to Pilot but we have a key few
+          that would round out and bolster its capabilities and ease of use. 
+        </p>
+        <ul>
+          <li>
+            We want to add support for a wider range of cloud providers as Pilot currently only supports for AWS and GCP. 
+          </li>
+          <li>
+            A user interface for database management would provide central management rather than having users go through a cloud provider's management console. 
+          </li>
+          <li>
+            Make configuring environment variables of applications easier through a UI component. There are
+            multiple ways environment variables could be set but a few options are within a waypoint.hcl file
+            or using the Waypoint CLI on an application or project level.
+          </li>
+          <li>
+            Lastly, we would like to support more Infrastructure as a Service offerings during our application
+            initialization process. With AWS for example, we default the generated configuration file to deploy
+            applications using Fargate on ECS but you could also use EC2 or lambda deployments by modifying the generated waypoint.hcl file.
           </li>
         </ul>
 
-        <!-- Section 9 -->
-        <h2>9 Team</h2>
+        <!-- Section 11 -->
+        <h2>11 Team</h2>
         <br>
         <br>
         <div class="section team-section">
@@ -1202,28 +824,28 @@
                 <div>
                   <div class="team-grid">
                     <div class="team-member-wrap">
-                      <img src="assets/images/team/andrew.jpg" loading="lazy" alt="" />
+                      <!-- <img src="assets/images/team/andrew.jpg" loading="lazy" alt="" /> -->
                       <div class="team-member-info">
-                        <div class="team-member-name">Andi Crotwell</div>
-                        <div class="team-member-location">Anaheim, CA</div>
+                        <div class="team-member-name">Carl Aquino</div>
+                        <div class="team-member-location">Atlanta, GA</div>
                       </div>
                       <ul class="team-member-icons">
                         <li>
-                          <a href="mailto:awcrotwell@gmail.com" target="_blank">
+                          <a href="mailto:jerritt.aquino@gmail.com" target="_blank">
                             <span class="team-member-icon">
                               <i class="fas fa-envelope"></i>
                             </span>
                           </a>
                         </li>
                         <li>
-                          <a href="https://awcrotwell.com" target="_blank">
+                          <a href="https://carljerrittaquino.com" target="_blank">
                             <span class="team-member-icon">
                               <i class="fas fa-globe"></i>
                             </span>
                           </a>
                         </li>
                         <li>
-                          <a href="https://linkedin.com/in/awcrotwell" target="_blank">
+                          <a href="https://www.linkedin.com/in/carl-jerritt-aquino/" target="_blank">
                             <span class="team-member-icon">
                               <i class="fab fa-linkedin"></i>
                             </span>
@@ -1232,28 +854,28 @@
                       </ul>
                     </div>
                     <div class="team-member-wrap">
-                      <img src="assets/images/team/pete.png" loading="lazy" alt="">
+                      <!-- <img src="assets/images/team/nick.jpeg" loading="lazy" alt=""> -->
                       <div class="team-member-info">
-                        <div class="team-member-name">Peter D'Elia</div>
-                        <div class="team-member-location">Charlottesville, VA</div>
+                        <div class="team-member-name">Vince Bundage</div>
+                        <div class="team-member-location">Salt Lake City, UT</div>
                       </div>
                       <ul class="team-member-icons">
                         <li>
-                          <a href="mailto:petertdelia@gmail.com" target="_blank">
+                          <a href="mailto:vincentbundage@gmail.com" target="_blank">
                             <span class="team-member-icon">
                               <i class="fas fa-envelope"></i>
                             </span>
                           </a>
                         </li>
                         <li>
-                          <a href="https://peterdelia.com" target="_blank">
+                          <a href="https://vbundage.dev" target="_blank">
                             <span class="team-member-icon">
                               <i class="fas fa-globe"></i>
                             </span>
                           </a>
                         </li>
                         <li>
-                          <a href="https://linkedin.com/in/peter-delia" target="_blank">
+                          <a href="https://www.linkedin.com/in/vincentbundageii/" target="_blank">
                             <span class="team-member-icon">
                               <i class="fab fa-linkedin"></i>
                             </span>
@@ -1262,58 +884,28 @@
                       </ul>
                     </div>
                     <div class="team-member-wrap">
-                      <img src="assets/images/team/nick.jpeg" loading="lazy" alt="">
+                      <img src="assets/images/team/graham.jpg" loading="lazy" alt="">
                       <div class="team-member-info">
-                        <div class="team-member-name">Nicholas LiCalzi</div>
-                        <div class="team-member-location">Brooklyn, NY</div>
+                        <div class="team-member-name">Graham Robertson</div>
+                        <div class="team-member-location">Nashville, TN</div>
                       </div>
                       <ul class="team-member-icons">
                         <li>
-                          <a href="mailto:nicholas.licalzi@gmail.com" target="_blank">
+                          <a href="mailto:grammar@hey.com" target="_blank">
                             <span class="team-member-icon">
                               <i class="fas fa-envelope"></i>
                             </span>
                           </a>
                         </li>
                         <li>
-                          <a href="https://nlicalzi.com" target="_blank">
+                          <a href="https://grahamr.dev/" target="_blank">
                             <span class="team-member-icon">
                               <i class="fas fa-globe"></i>
                             </span>
                           </a>
                         </li>
                         <li>
-                          <a href="https://linkedin.com/in/nicholaslicalzi" target="_blank">
-                            <span class="team-member-icon">
-                              <i class="fab fa-linkedin"></i>
-                            </span>
-                          </a>
-                        </li>
-                      </ul>
-                    </div>
-                    <div class="team-member-wrap">
-                      <img src="assets/images/team/angel.jpeg" loading="lazy" alt="">
-                      <div class="team-member-info">
-                        <div class="team-member-name">Angel Ruiz-Bates</div>
-                        <div class="team-member-location">Tucson, AZ</div>
-                      </div>
-                      <ul class="team-member-icons">
-                        <li>
-                          <a href="mailto:angeljrbt@gmail.com" target="_blank">
-                            <span class="team-member-icon">
-                              <i class="fas fa-envelope"></i>
-                            </span>
-                          </a>
-                        </li>
-                        <li>
-                          <a href="https://angelruizbates.com/" target="_blank">
-                            <span class="team-member-icon">
-                              <i class="fas fa-globe"></i>
-                            </span>
-                          </a>
-                        </li>
-                        <li>
-                          <a href="https://www.linkedin.com/in/angel-ruiz-bates-1b68a2142/" target="_blank">
+                          <a href="https://www.linkedin.com/in/grammar/" target="_blank">
                             <span class="team-member-icon">
                               <i class="fab fa-linkedin"></i>
                             </span>
