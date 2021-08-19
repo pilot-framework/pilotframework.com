@@ -549,10 +549,219 @@
 
         <!-- Section 9 -->
         <h2 class="h2">9 Implementation Challenges</h2>
+        <p>
+          There were three major challenges we ran into while developing Pilot. Creating
+          Waypoint plugins, building out a custom image capable of handling our Waypoint
+          operations, and whether to use Docker-in-Docker for image builds.
+        </p>
+        <br />
         <h3>9.1 Creating Waypoint Plugins</h3>
-        <h3>9.2 Building a Custom Image for Waypoint Operations</h3>
+        <p>
+          Plugins are binaries written in Go that implement one or more Waypoint components.
+          Waypoint components consist of the deployment lifecycle such as building artifacts
+          and pushing them to a registry. You can think of them as middleware that Waypoint
+          injects into the lifecycle. 
+        </p>
+        <br />
+        <p>
+          When we started learning about Waypoint, we realized that many of the built in
+          plugins were geared towards deploying full-stack or backend applications. We felt
+          there was an opportunity for plugins that were able to deploy static assets from
+          something like a React application. So we were happy to see Waypoint provides an
+          SDK that allow developers to create their own plugins. You can create plugins that
+          execute for the entire build, deploy, release cycle or individual parts of it. 
+        </p>
+        <br />
+        <p>
+          Pilot has several plugins created for your use that come baked into our custom Waypoint image.
+        </p>
+        <ul>
+          <li>
+            A Yarn plugin executes during the build phase to bundle frontend applications into static files. 
+          </li>
+          <li>
+            An Amazon Cloudfront plugin that interfaces during the deploy and release phases.
+            This plugin will upload static files to S3 and release a static site to a Cloudfront distribution.
+          </li>
+          <li>
+            Finally, a Cloud CDN plugin for GCP that works like the Cloudfront plugin by uploading static files
+            to Cloud Storage and releasing on Cloud CDN.
+          </li>
+        </ul>
+        <br />
+        <p>
+          Developing these plugins introduced their own challenges. For one, the documentation for creating plugins
+          was a bit light on context. It and the associated tutorial focuses mainly on the build phase. Since the
+          information for additional components was more conceptual we needed to reference source code of the built
+          in plugins, custom plugins from other developers, and trial and error to get the functionality we wanted. 
+        </p>
+        <br />
+        <!-- TODO figure -->
+        <br />
+        <p>
+          Another problem was SDK support depending on the cloud provider. We found the AWS SDK to be robust and
+          easy to work with. Anything we needed to provision for deploying to Cloudfront could be done using it. 
+        </p>
+        <br />
+        <p>
+          The GCP SDK however was limited in some ways. Creating Cloud Storage buckets and uploading assets was
+          supported but provisioning the resources needed for a Cloud CDN release was not. Additionally, deleting
+          certain resources using the SDK was also partially supported which was a drawback when wanting to
+          teardown those resources automatically. 
+        </p>
+        <br />
+        <!-- TODO figure -->
+        <br />
+        <p>
+          We decided to use a combination of the SDK with the gcloud CLI to give us the same functionality as
+          the Cloudfront plugin. We created a wrapper for gcloud commands to give a familiarity and usability
+          as an SDK and it worked out fine for our needs. 
+        </p>
+        <br />
+        <p>
+          However, needing the gcloud CLI installed created a dependency on our Waypoint containers
+          when deploying front-end applications using our Cloud CDN plugin. 
+        </p>
+        <br />
+        <h3>9.2 Building a Custom Docker Image</h3>
+        <p>
+          By default Waypoint uses HashiCorp's Waypoint image which can be found publicly available
+          on Docker Hub. It includes the Waypoint binary and built-in plugins developed by HashiCorp.
+          But this introduced a problem for our team when it came to adding our own plugins. 
+        </p>
+        <br />
+        <!-- TODO figure -->
+        <br />
+        <p>
+          We wanted to include our custom plugins for Yarn builds and Cloud CDN and Cloudfront
+          deployments. At this time, Waypoint does not currently have a community plugin system
+          for making custom plugins generally available. Our plugins also had their own
+          dependencies like NodeJS and Yarn to build static files or gcloud CLI for Cloud CDN provisioning.
+        </p>
+        <br />
+        <!-- TODO figure -->
+        <br />
+        <p>
+          We decided to create our own custom Waypoint development and release images that can
+          be pulled from Docker Hub freely. To do this we had to reverse engineer Waypoint's
+          default image and source code to figure out how Waypoint starts the server and runner
+          containers but also what packages the Waypoint image had internally. 
+        </p>
+        <br />
+        <p>
+          Our investigation found the image was pretty much a barebones Linux distribution
+          limited to the Bourne shell. Not much else stood out in terms of dependencies for
+          normal Waypoint installations. This meant using that image as a base would require
+          installing multiple standard Linux packages you would expect in our Dockerfile. 
+        </p>
+        <br />
+        <p>
+          We initially started off with a standard Node image and only needed to install
+          gcloud as a dependency. This worked fine but the resulting image was unnecessarily
+          large at approximately ~1.6 gigs. The Node image has other packages installed we really
+          did not need. Waypoint server installs took longer as a result. 
+        </p>
+        <br />
+        <p>
+          We were keen on downsizing the image build as much as possible and attempted multiple
+          prototypes. We discovered an image that Google maintains which contains gcloud and
+          decided to use it as a base for our custom image. This cut down the bloat by 50%
+          and increased performance of our Waypoint server installs using Pilot's image. 
+        </p>
         <h3>9.3 Docker-in-Docker Image Builds</h3>
-
+        <p>
+          Another challenging aspect of remote Waypoint operations is executing image builds
+          and pushes to a container registry from a runner container. There are several so
+          called Docker-in-Docker methods that one may use to accomplish this with a few outlined below. 
+        </p>
+        <br />
+        <!-- TODO figure -->
+        <br />
+        <p>
+          The first method uses the <code>docker.sock</code> which is the default Unix socket that
+          the Docker daemon listens to. From a Docker host you run a command that starts a container
+          with a Docker binary installed and mount the host's socket path to allow running Docker
+          commands from within the container. When commands are executed, all operations happen on
+          the host such as image builds, pushes, and container starts. Any started containers become
+          siblings of the container issuing the commands.
+        </p>
+        <br />
+        <!-- TODO figure -->
+        <br />
+        <p>
+          The second method uses an outer container started from an official Docker-in-Docker image
+          that Docker maintains. A container must be started in privileged mode which can have
+          adverse side effects. 
+        </p>
+        <br />
+        <p>
+          The container will get full access to all devices on the host. Consequently this is
+          the same access to the host as any processes running outside of containers which can
+          be a security flaw if the privileged container were to be compromised. 
+        </p>
+        <br />
+        <p>
+          All Docker operations would occur within the container. Images would be built and
+          stored on the container which is not great when containers should be lightweight.
+          Started containers would become children and nested within the outer container and
+          this creates additional management overhead with the amount of abstraction. 
+        </p>
+        <br />
+        <p>
+          Evaluating Docker-in-Docker generated its own problems. It is generally not recommended
+          due to the issues mentioned previously and more but it is meant for niche use cases such
+          as developing for Docker or using it in continuous integration. Even using it in terms
+          of continuous integration there are better options out there. 
+        </p>
+        <br />
+        <p>
+          We also did not want to clutter our custom image with a Docker installation if all
+          that was needed is build and push capabilities for deployments. Another issue is
+          that Waypoint handles starting the server and runner containers, so there is no
+          control over mounting the <code>docker.sock</code> as a volume, as seen in the first method, nor
+          starting a container in privileged mode with the second method. 
+        </p>
+        <br />
+        <!-- TODO figure -->
+        <br />
+        <p>
+          Our solution was to make the host, being our Pilot server, a Docker server and
+          expose Docker as an API for the runner container to consume. This looks and feels
+          like Docker-in-Docker but is not since we do not need a Docker installation on
+          the container. It also isolates Docker operations to the host where Docker is
+          installed. All you need for the runner was to set a <code>DOCKER_HOST</code> environment
+          variable referencing the host address and port. 
+        </p>
+        <br />
+        <p>
+          When the container needs to build and push images it makes requests to the API
+          without needing Docker installed itself. 
+        </p>
+        <br />
+        <p>
+          This worked to be a viable option but it introduced another problem and that was
+          malicious attackers scanning for misconfigured Docker APIs. With a Docker server
+          port completely exposed it is essentially giving root access to the host machine. 
+        </p>
+        <br />
+        <!-- TODO figure -->
+        <br />
+        <p>
+          We ran into a group called TeamTNT and they take over Docker processes, install
+          their image, and start a container. The container is used to compromise the host
+          machine by mounting the host's <code>/bin/sh</code> path as a volume and using the <code>chroot</code> command
+          to run a process on that path. Typically they will implement a crypto miner on the host machine. 
+        </p>
+        <br />
+        <p>
+          Various issues were raised by this exploit during development and testing
+          application deployments. A possible solution would be to use TLS so the
+          requester would have to be authorized. Another solution, and one we chose,
+          was to lock down the configured Docker server port 2375 with a security group
+          or firewall rule on the respective cloud provider. This way the only allowed
+          source traffic has to come from the same address as the server and keeps the
+          runner container on a Docker network.
+        </p>
         <!-- Section 10 -->
         <h2 class="h2">10 Future Work</h2>
 
