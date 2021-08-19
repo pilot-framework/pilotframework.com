@@ -576,16 +576,16 @@ label {
 }
 
 #spin:after {
-  content: "‏‏‎‏‏‎‎builds";
+  content: "‏‏‎‏‏‎‎builds  ";
   animation: spin 3s linear infinite
 }
 
 @keyframes spin {
   33% {
-    content: "‏‏‎deploys‎‎‎‎‏‏‎"
+    content: "‏‏‎deploys‎‎ ‎‎‏‏‎"
   }
   66% {
-    content: "‏‏‎‎releases"
+    content: "‏‏‎‎releases  "
   }
 }
 
