@@ -584,22 +584,19 @@ label {
   -webkit-text-fill-color: transparent;
 }
 
-/*#spin:after {
-  content: "‏‏‎‏‏‎ ‎centralizing";
+#spin:after {
+  content: "‏‏‎‏‏‎‎builds";
   animation: spin 3s linear infinite
 }
-*/
-/*@keyframes spin {
-  25% {
-    content: "‏‏‎ ‎encrypting‎‎‎‎‏‏‎"
+
+@keyframes spin {
+  33% {
+    content: "‏‏‎deploys‎‎‎‎‏‏‎"
   }
-  50% {
-    content: "‏‏‎ ‎managing‏‏‎"
+  66% {
+    content: "‏‏‎‎releases"
   }
-  75% {
-    content: "‏‏‎ ‎securing‏‏‎"
-  }
-}*/
+}
 
 .spin {
   align-self: flex-start;
