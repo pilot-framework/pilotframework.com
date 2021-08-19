@@ -366,8 +366,170 @@
 
         <!-- Section 8 -->
         <h2 class="h2">8 Design Decisions</h2>
+        <p>
+          Our design intention while developing Pilot was to make it easy for a small team of developers
+          to focus on writing code and deploying their applications with a cloud-agnostic approach. They
+          will not have to worry about the underlying infrastructure, just that their applications are made
+          available for consumption while still having control of the platform and choice of provider. The
+          main design decisions centered around using Waypoint as a deployment tool and how to install it
+          to handle remote operations.
+        </p>
+        <br />
         <h3>8.1 Extending Waypoint</h3>
+        <p>
+          An integral decision for Pilot was to extend Waypoint. It is a fairly new product in the open
+          source deployment space but gives you various options around image builds and deploying applications
+          to multiple cloud providers. Using it as base for Pilot's design provided several benefits.
+        </p>
+        <br />
+        <p><strong>Existing User Interface</strong></p>
+        <br />
+        <p>
+          We were able to focus on CLI and infrastructure development since Waypoint has an existing user
+          interface. It is simple in features and does not require a large time investment to get the hang of. 
+        </p>
+        <br />
+        <p><strong>Custom Plugin Ecosystem</strong></p>
+        <br />
+        <p>
+          The Waypoint SDK allowed us to develop our own custom plugins in Go. This enabled us to add in
+          static web hosting as a deployment option using our Cloudfront and Cloud CDN plugins.
+        </p>
+        <br />
+        <p><strong>Trusted Open-Source Company</strong></p>
+        <br />
+        <p>
+          Waypoint was developed by HashiCorp which we considered to be a trusted open-source company.
+          They are well known and have products that many companies have incorporated into their multi-cloud strategies. 
+        </p>
+        <br />
+        <p><strong>Familiarity with HashiCorp Configuration Language</strong></p>
+        <br />
+        <p>
+          Developers that have used HashiCorp's products are also familiar with their HashiCorp
+          Configuration Language. You would recognize it if you have used their products like
+          Terraform, which is a popular infrastructure automation tool. The syntax of the
+          configuration files is meant to be easy to read and write.
+        </p>
+        <br />
+
         <h3>8.2 Handling Remote Waypoint Operations</h3>
+        <p>
+          Remote collaboration is an important aspect of a PaaS but can have some roadblocks when configuring your own.
+        </p>
+        <br />
+        <p><strong>Steps to Set Up Waypoint</strong></p>
+        <br />
+        <p>
+          Currently with Waypoint it is difficult to use it as a remote management option.
+          If a team wanted to integrate Waypoint into their platform, they would have to consider a few design decisions of their own. 
+        </p>
+        <br />
+        <figure>
+          <img src="assets/images/case-study/waypoint_steps.png" class="case-study-image" />
+          <figcaption>Fig. X: TODO</figcaption>
+        </figure>
+        <br />
+        <p>
+          First, you would need to provision the necessary infrastructure for remote operations
+          which could be an AWS EC2 virtual machine. Install and configure dependencies such as
+          Waypoint and Docker to be able to deploy applications to the cloud. Set up networking
+          and rules for the EC2 instance to restrict access to your developers for remote management. 
+        </p>
+        <br />
+        <p>
+          The Waypoint server would also need the proper permissions such as service credentials
+          for all cloud providers you would want to deploy to. Additionally, Waypoint's documentation
+          recommends configuring Docker-in-Docker for a remote Waypoint runner to handle building
+          and pushing images to a container registry. Finally, you have to configure your local
+          environment to communicate with the established remote pipeline. 
+        </p>
+        <br />
+        <p>
+          We believed automating this process would remove a large pain point for our users.
+        </p>
+        <br />
+        <p><strong>Using a Remote Waypoint Server</strong></p>
+        <br />
+        <p>
+          We decided to use a remote Waypoint server to serve as the backbone of Pilot's
+          deployment operations to multiple cloud providers. But you might be wondering:
+          why was it a good option to create a remote Pilot server in the first place?
+        </p>
+        <!-- TODO: figure -->
+        <br />
+        <p>
+          As you can see, a simple Waypoint configuration is much easier when set up
+          locally. All that is requires is a Waypoint binary and a server container
+          running on your local machine. A runner container is not necessary for taking
+          on deployment jobs. The Waypoint binary will serve as the runner in this
+          type of configuration which is less management overhead. 
+        </p>
+        <!-- TODO: figure -->
+        <br />
+        <p>
+          A remote Pilot server would enable us to provide increased flexibility for
+          our users. The Pilot server can be provisioned on our supported cloud providers
+          to easily allow collaboration with a team. Users will not have to configure
+          their local machine to be accessible on a network and you get a centralized
+          management server for project and application deployments. 
+        </p>
+        <br />
+        <p>
+          We also take away the concern of installing local dependencies for the
+          deployment lifecycle. You will not have to install Docker, Pack, or any
+          additional tooling since they are available on the Pilot server. However
+          we do provide the flexibility of managing the Pilot server through SSH access.
+        </p>
+        <br />
+        <p>
+          Having a remote Pilot server is good and all but how should we install
+          the Waypoint server to it? Waypoint allows installing servers and runners
+          using Docker, Kubernetes, and even HashiCorp’s Nomad orchestration service.
+          The options came down to Docker and Kubernetes as an installation platform
+          for our containers. 
+        </p>
+        <br />
+        <!-- TODO: figure -->
+        <p>
+          With Kubernetes orchestration we could spin up a cluster that would give us
+          the benefits of high availability and scalability. Having multiple runners
+          set up on a cluster would be able to handle concurrent deployments of
+          applications. This would be a value add for teams wanting simultaneous deployments
+          without a wait time. A cluster could also have self healing capabilities
+          to bring containers back up if they were to go down. 
+        </p>
+        <br />
+        <p>
+          That all sounds great but Kubernetes has some drawbacks for users new to it.
+        </p>
+        <br />
+        <p>
+          Kubernetes will introduce extra overhead for smaller development teams. It is
+          difficult to understand and implement as you will be spending a lot of time in
+          documentation to wrap your head around proper configuration and management.
+          With that in mind it is not the best option if you want to get up and running quickly.
+        </p>
+        <br />
+        <p>
+          Kubernetes clusters can also be difficult to maintain without a dedicated DevOps engineer or team member who has DevOps experience. 
+        </p>
+        <br />
+        <!-- TODO: figure -->
+        <p>
+          With Pilot we decided to make the Pilot server virtual machine provision a single
+          server and runner container on Docker as a platform. Through our testing as a
+          small development team, a single Waypoint server and runner was enough for our needs.
+          This makes it easier for users as they will only have to manage a single virtual machine
+          along with a couple of containers and not the headache of a Kubernetes cluster on top of it. 
+        </p>
+        <br />
+        <p>
+          Runners are considered an advanced configuration but you could spin up more on the
+          Pilot server if needed with documentation available on the Waypoint site.
+        </p>
+        <br />
+
 
         <!-- Section 9 -->
         <h2 class="h2">9 Implementation Challenges</h2>
