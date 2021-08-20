@@ -360,9 +360,129 @@
 
         <!-- Section 6 -->
         <h2 class="h2">6 Pilot's Architecture</h2>
+        <p>
+          Pilot consists of two main parts, the <strong>server</strong> and the <strong>CLI</strong>.
+        </p>
+        <h3>6.1 Pilot CLI</h3>
+        <p>
+          The <i>Pilot CLI</i> is what provisions the Pilot Server and how we can communicate with it after it's provisioned.
+        </p>
+        <br />
+        <figure>
+          <!-- <img src="assets/images/case-study/acme_arch_1.png" class="case-study-image" /> -->
+          <figcaption>Fig. X: Pilot CLI provisioning and communicating with Pilot server</figcaption>
+        </figure>
+        <br />
+        <h3>6.2 Pilot Server</h3>
+        <p>
+          The Pilot server is provisioned using Terraform. A <code>main.tf</code> file is dynamically generated for either an AWS EC2 instance or a GCP Compute Engine
+          instance depending on what flag the user provides. Terraform then provisions a virtual machine that will host our custom Waypoint containers which will run in
+          Docker.
+        </p>
+        <p>
+          We also used a tool called cloud-init to help us bootstrap the virtual machine with the proper software and configure it the same way every time. Cloud-init allowed
+          us to create identical clones of the Pilot server across different cloud providers.
+        </p>
+        <br />
+        <figure>
+          <!-- <img src="assets/images/case-study/acme_arch_1.png" class="case-study-image" /> -->
+          <figcaption>Fig. X: Pilot server architecture </figcaption>
+        </figure>
+        <br />
+
+        <h3>6.3 Custom Waypoint Image</h3>
+        <p>
+          Instead of using the default Waypoint image provided, we needed to create our own custom Waypoint image so that the runner container can have everything it needs to
+          handle the deployment process. We discuss this further on section 9.2.
+        </p>
+        <br />
+        <figure>
+          <!-- <img src="assets/images/case-study/acme_arch_1.png" class="case-study-image" /> -->
+          <figcaption>Fig. X: Custom waypoint image</figcaption>
+        </figure>
+        <br />
 
         <!-- Section 7 -->
         <h2 class="h2">7 Installing and Using Pilot</h2>
+        <h3>7.1 Installation</h3>
+        <p>
+          Pilot is an NPM package that can be installed using <code>npm i -g @pilot-framework/pilot</code>
+        </p>
+
+        <h3>7.2 Set Up Pilot Server</h3>
+        <h4>pilot init</h4>
+        <p>
+          <code>pilot init</code> sets up our local environment. It downloads binaries we need like <i>Terraform</i> and <i>Waypoint</i>, and also sets up the rest of our
+          files for Pilot to run properly.
+        </p>
+
+        <h4>pilot setup [PROVIDER]</h4>
+        <p>
+          <code>pilot setup [PROVIDER]</code> provisions a virtual machine in the chosen cloud provider. The architecture below shows an AWS EC2 instance but it can be a
+          GCP Compute Engine instance as well. Setting up the Pilot server can take a few minutes to finish provisioning because it has to provision a VM, provision a database,
+          install all the necessary software the Pilot server needs, and finally configure the local environment to work with the server. 
+        </p>
+        <p>
+          Once the Pilot server is provisioned and configured, we're able to deploy our applications.
+        </p>
+
+        <h3>7.3 Deploy Application</h3>
+        <p>Deploying an application is a three step process:</p>
+        <ol>
+          <li>Creating the Project</li>
+          <li>Creating and Configuring the Application></li>
+          <li>Deploying the Application</li>
+        </ol>
+        <h4>Creating the Project - <code>pilot new project</code></h4>
+        <p>
+          First, we need to create the project to deploy ion the Pilot server. It's as simple as calling <code>pilot new project</code>. The command will prompt for the name of
+          the project and will configure it on the Pilot server.
+        </p>
+        <br />
+        <figure>
+          <!-- <img src="assets/images/case-study/acme_arch_1.png" class="case-study-image" /> -->
+          <figcaption>Fig. X: pilot new project command</figcaption>
+        </figure>
+        <br />
+
+        <h4>Creating and Configuring the App - <code>pilot new app</code></h4>
+        <p>
+          <code>pilot new app</code> is where we configure general information about our application. It will prompt us for some of the necessary information that is needed to
+          deploy our application like what cloud provider to deploy to, the application name, and various other things.
+        </p>
+        <p>
+          Once the configuration is complete, a <code>waypoint.hcl</code> file will be generated. We need to push this into the root of our application repository before we can
+          deploy it.
+        </p>
+        <br />
+        <figure>
+          <!-- <img src="assets/images/case-study/acme_arch_1.png" class="case-study-image" /> -->
+          <figcaption>Fig. X: pilot new app command</figcaption>
+        </figure>
+        <br />
+
+        <h4>Creating and Configuring the App - UI Configuration</h4>
+        <p>
+          From the UI, we need to configure our app and link it to the remote repository.
+        </p>
+        <br />
+        <figure>
+          <!-- <img src="assets/images/case-study/acme_arch_1.png" class="case-study-image" /> -->
+          <figcaption>Fig. X: App Configuration through UI</figcaption>
+        </figure>
+        <br />
+
+        <h4>Deploying the App - <code>pilot up [PROJECT]/[APP]</code></h4>
+        <p>
+          <code>pilot up</code> is called with the project name and app name as arguments. It will look at the <code>waypoint.hcl</code> file and go through the three phases of
+          deployment: build, deploy, and release.
+        </p>
+        <br />
+        <figure>
+          <!-- <img src="assets/images/case-study/acme_arch_1.png" class="case-study-image" /> -->
+          <figcaption>Fig. X: pilot up command</figcaption>
+        </figure>
+        <br />
 
         <!-- Section 8 -->
         <h2 class="h2">8 Design Decisions</h2>
