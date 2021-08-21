@@ -347,11 +347,57 @@
         <br />
         <p>
           And <i>that</i> is why we built Pilot - a tool that can assist small development teams without the resources and expertise that
-          larger companies might have at their disposal to tackle complex multi-cloud deployments.
+          larger companies might have at their disposal to tackle complex multi-cloud deployments. Because Pilot acts as an internal PaaS,
+          this also means ACME would still own all of the infrastructure and services Pilot utilizes.
+        </p>
+        <br />
+        <figure>
+          <img src="assets/images/case-study/internal_paas.png" class="case-study-image" />
+          <figcaption>Fig. 10: comparison of a PaaS and internal PaaS</figcaption>
+        </figure>
+        <br />
+        <p>
+          As a reminder, a PaaS manages everything for you, taking away control and configurability to provide ease-of-use.
+          The platform provider, such as Heroku, manages the infrastructure themselves - potentially even using an IaaS
+          provider. In Heroku's case, they build on top of AWS services.
+        </p>
+        <br />
+        <p>
+          An internal, or self-hosted, PaaS still provides the ability to control and configure the platform as long as you have
+          the expertise, while still providing sensible defaults so that novice users don't have to worry about the underlying
+          services. In Pilot's case, developers can provision that internal PaaS on either GCP or AWS - so the cloud provider
+          still manages the underlying hardware - and Pilot manages the necessary IaaS services that we utilize, which we will
+          discuss in section 5.
         </p>
 
         <!-- Section 4 -->
         <h2 class="h2">4 Who Should Use Pilot?</h2>
+        <p>
+          When it comes to utilizing a platform, companies generally consider three options: build, buy, or operate.
+        </p>
+        <br />
+        <figure>
+          <img src="assets/images/case-study/pilot_compare.png" class="case-study-image" />
+          <figcaption>Fig. 11: comparison of potential solutions</figcaption>
+        </figure>
+        <br />
+        <p>
+          The first option, <strong>build</strong>, simply isn’t feasible for a small company. If you’re a tech giant like Netflix or Atlassian,
+          with a huge budget and experienced DevOps engineers, you can roll your own internal platform. For a small company,
+          their time is much better spent on their own core-business product that keeps the lights on. 
+        </p>
+        <br />
+        <p>
+          If a small company like ACME were to <strong>buy</strong> a solution, they might look at working with a PaaS vendor like Cloud66.
+          Utilizing a platform vendor makes the whole process very easy and painless, but that ease comes with a pretty
+          steep price. Not every small company has enough runway to justify spending money on a highly-scalable platform. 
+        </p>
+        <br />
+        <p>
+          Pilot exists in the third option, <strong>operate</strong>. Our open source solution makes it relatively simple to spin up your own
+          internal PaaS without breaking the bank and without being overly complex for a small team to manage and maintain. And if they have the time,
+          they can even extend it to fit their own use cases.
+        </p>
 
         <!-- Section 5 -->
         <h2 class="h2">5 Pilot's Architecture</h2>
