@@ -116,7 +116,7 @@
         <br />
         <figure>
           <img src="assets/images/case-study/monolith_1.png" class="case-study-image" />
-          <figcaption>Fig. 1: TODO</figcaption>
+          <figcaption>Fig. 1: multiple users making requests to a monolithic application</figcaption>
         </figure>
         <br />
         <p>
@@ -141,7 +141,7 @@
         <br />
         <figure>
           <img src="assets/images/case-study/monolith_2.png" class="case-study-image" />
-          <figcaption>Fig. 2: TODO</figcaption>
+          <figcaption>Fig. 2: the underlying services contained within the monolith's codebase</figcaption>
         </figure>
         <br />
         <p>
@@ -152,7 +152,7 @@
         <br />
         <figure>
           <img src="assets/images/case-study/microservice_1.png" class="case-study-image" />
-          <figcaption>Fig. 3: TODO</figcaption>
+          <figcaption>Fig. 3: the same monolith broken apart into microservices</figcaption>
         </figure>
         <br />
         <h3>2.3 Adopting a Multi-Cloud Strategy</h3>
@@ -212,7 +212,7 @@
         <br />
         <figure>
           <img src="assets/images/case-study/monolith_3.png" class="case-study-image" />
-          <figcaption>Fig. 4: TODO</figcaption>
+          <figcaption>Fig. 4: users overwhelming the authentication service in a monolithic application</figcaption>
         </figure>
         <br />
         <p>
@@ -224,7 +224,7 @@
         <h3>3.2 Deployment Pipeline</h3>
         <figure>
           <img src="assets/images/case-study/deployment_pipeline.png" class="case-study-image" />
-          <figcaption>Fig. 5: TODO</figcaption>
+          <figcaption>Fig. 5: an example deployment pipeline for various applications</figcaption>
         </figure>
         <br />
         <p>
@@ -239,7 +239,7 @@
         <br />
         <p>
           The artifact from the build phase is then used as the application is deployed to the proper hosting solution. There are many
-          solutions out there: such as Google Cloud Run for container orchestration, AWS EC2 for virtual machines, and AWS S3 for static file hosting.
+          solutions out there, such as: Google Cloud Run for container orchestration, AWS EC2 for virtual machines, and AWS S3 for static file hosting.
         </p>
         <br />
         <p>
@@ -351,29 +351,25 @@
         </p>
 
         <!-- Section 4 -->
-        <h2 class="h2">4 Overview of Pilot</h2>
-        <h3>4.1 How Does Pilot Help Teams?</h3>
-        <h3>4.2 What's in Pilot?</h3>
+        <h2 class="h2">4 Who Should Use Pilot?</h2>
 
         <!-- Section 5 -->
-        <h2 class="h2">5 Who Should Use Pilot?</h2>
-
-        <!-- Section 6 -->
-        <h2 class="h2">6 Pilot's Architecture</h2>
+        <h2 class="h2">5 Pilot's Architecture</h2>
         <p>
           Pilot consists of two main parts, the <strong>server</strong> and the <strong>CLI</strong>.
         </p>
-        <h3>6.1 Pilot CLI</h3>
+        <h3>5.1 Pilot CLI</h3>
         <p>
-          The <i>Pilot CLI</i> is what provisions the Pilot Server and how we can communicate with it after it's provisioned.
+          The <i>Pilot CLI</i> is what provisions the Pilot Server and how we can communicate with it after it's provisioned. The functionality of the CLI is covered
+          in greater detail in section 6.
         </p>
         <br />
-        <figure>
-          <!-- <img src="assets/images/case-study/acme_arch_1.png" class="case-study-image" /> -->
+        <!-- <figure>
+          <img src="assets/images/case-study/acme_arch_1.png" class="case-study-image" />
           <figcaption>Fig. X: Pilot CLI provisioning and communicating with Pilot server</figcaption>
         </figure>
-        <br />
-        <h3>6.2 Pilot Server</h3>
+        <br /> -->
+        <h3>5.2 Pilot Server</h3>
         <p>
           The Pilot server is provisioned using Terraform. A <code>main.tf</code> file is dynamically generated for either an AWS EC2 instance or a GCP Compute Engine
           instance depending on what flag the user provides. Terraform then provisions a virtual machine that will host our custom Waypoint containers which will run in
@@ -385,74 +381,75 @@
         </p>
         <br />
         <figure>
-          <!-- <img src="assets/images/case-study/acme_arch_1.png" class="case-study-image" /> -->
+          <img src="assets/images/case-study/pilot_server.png" class="case-study-image" />
           <figcaption>Fig. X: Pilot server architecture </figcaption>
         </figure>
         <br />
+        <p>
+          The containers running on the Pilot Server are a Waypoint server and Waypoint runner. The Waypoint server handles incoming requests, serves the user interface,
+          and caches project metadata. The runner handles the execution of the deployment lifecycle. Whenever a command is executed, such as <code>pilot up</code>, the
+          server receives the request, understands that it is a deployment command, then tells the runner to handle the execution for the proper application.
+        </p>
 
-        <h3>6.3 Custom Waypoint Image</h3>
+        <h3>5.3 Custom Waypoint Image</h3>
         <p>
           Instead of using the default Waypoint image provided, we needed to create our own custom Waypoint image so that the runner container can have everything it needs to
-          handle the deployment process. We discuss this further on section 9.2.
+          handle the deployment process. We discuss this further in section 9.2.
         </p>
-        <br />
-        <figure>
-          <!-- <img src="assets/images/case-study/acme_arch_1.png" class="case-study-image" /> -->
-          <figcaption>Fig. X: Custom waypoint image</figcaption>
-        </figure>
-        <br />
 
-        <!-- Section 7 -->
-        <h2 class="h2">7 Installing and Using Pilot</h2>
-        <h3>7.1 Installation</h3>
+        <!-- Section 6 -->
+        <h2 class="h2">6 Installing and Using Pilot</h2>
+        <h3>6.1 Installation</h3>
         <p>
           Pilot is an NPM package that can be installed using <code>npm i -g @pilot-framework/pilot</code>
         </p>
 
-        <h3>7.2 Set Up Pilot Server</h3>
+        <h3>6.2 Set Up Pilot Server</h3>
         <h4>pilot init</h4>
         <p>
-          <code>pilot init</code> sets up our local environment. It downloads binaries we need like <i>Terraform</i> and <i>Waypoint</i>, and also sets up the rest of our
-          files for Pilot to run properly.
+          <code>pilot init</code> sets up your local environment. It downloads binaries Pilot needs like <i>Terraform</i> and <i>Waypoint</i>, and also scaffolds our metadata
+          directory, <code>~/.pilot</code>, which contains any necessary information Pilot needs to operate.
         </p>
 
         <h4>pilot setup [PROVIDER]</h4>
         <p>
-          <code>pilot setup [PROVIDER]</code> provisions a virtual machine in the chosen cloud provider. The architecture below shows an AWS EC2 instance but it can be a
-          GCP Compute Engine instance as well. Setting up the Pilot server can take a few minutes to finish provisioning because it has to provision a VM, provision a database,
-          install all the necessary software the Pilot server needs, and finally configure the local environment to work with the server. 
+          <code>pilot setup [PROVIDER]</code> provisions a virtual machine in the chosen cloud provider. The architecture previously shown depicts an AWS EC2 instance but it can be a
+          GCP Compute Engine instance as well. Setting up the Pilot Server can take a few minutes to finish provisioning because it has to provision a VM, provision a database,
+          install all the necessary software the Pilot Server needs, and finally configure the local environment to communicate with the server.
         </p>
+        <br />
+        <figure>
+          <img src="assets/images/pilot-setup.gif" class="case-study-image" />
+          <figcaption>Fig. X: pilot setup command</figcaption>
+        </figure>
+        <br />
         <p>
-          Once the Pilot server is provisioned and configured, we're able to deploy our applications.
+          Once the Pilot Server is provisioned and configured, you're able to deploy your applications.
         </p>
 
-        <h3>7.3 Deploy Application</h3>
+        <h3>6.3 Deploy an Application</h3>
         <p>Deploying an application is a three step process:</p>
         <ol>
           <li>Creating the Project</li>
-          <li>Creating and Configuring the Application></li>
+          <li>Creating and Configuring the Application</li>
           <li>Deploying the Application</li>
         </ol>
         <h4>Creating the Project - <code>pilot new project</code></h4>
         <p>
-          First, we need to create the project to deploy ion the Pilot server. It's as simple as calling <code>pilot new project</code>. The command will prompt for the name of
-          the project and will configure it on the Pilot server.
+          First, you need to create the project to deploy on the Pilot server. It's as simple as calling <code>pilot new project</code>. The command will prompt for the name of
+          the project and will register it with the Pilot Server. This action can also be done via the provided UI.
         </p>
         <br />
-        <figure>
-          <!-- <img src="assets/images/case-study/acme_arch_1.png" class="case-study-image" /> -->
+        <!-- <figure>
+          <img src="assets/images/case-study/acme_arch_1.png" class="case-study-image" />
           <figcaption>Fig. X: pilot new project command</figcaption>
         </figure>
-        <br />
+        <br /> -->
 
         <h4>Creating and Configuring the App - <code>pilot new app</code></h4>
         <p>
-          <code>pilot new app</code> is where we configure general information about our application. It will prompt us for some of the necessary information that is needed to
-          deploy our application like what cloud provider to deploy to, the application name, and various other things.
-        </p>
-        <p>
-          Once the configuration is complete, a <code>waypoint.hcl</code> file will be generated. We need to push this into the root of our application repository before we can
-          deploy it.
+          <code>pilot new app</code> configures general information about your application. It will prompt you for some of the necessary information that is needed to
+          deploy your application like what cloud provider to deploy to, the application name, and other pertinent information.
         </p>
         <br />
         <figure>
@@ -460,17 +457,17 @@
           <figcaption>Fig. X: pilot new app command</figcaption>
         </figure>
         <br />
+        <p>
+          Once the configuration is complete, a <code>waypoint.hcl</code> file will be generated. You need to push this into the root of your application repository before you can
+          deploy it. Or, if you prefer the <code>waypoint.hcl</code> to not be checked into your repository, you can copy the file contents, and paste it within the UI when
+          selecting the location of the <code>waypoint.hcl</code> file.
+        </p>
 
         <h4>Creating and Configuring the App - UI Configuration</h4>
         <p>
-          From the UI, we need to configure our app and link it to the remote repository.
+          From the UI, you need to configure your app and link it to your remote repository. More information on how to do this can be found via
+          <a href="https://www.waypointproject.io/docs/projects/git#polling" target="_blank">Waypoint's documentation</a>.
         </p>
-        <br />
-        <figure>
-          <!-- <img src="assets/images/case-study/acme_arch_1.png" class="case-study-image" /> -->
-          <figcaption>Fig. X: App Configuration through UI</figcaption>
-        </figure>
-        <br />
 
         <h4>Deploying the App - <code>pilot up [PROJECT]/[APP]</code></h4>
         <p>
@@ -479,13 +476,17 @@
         </p>
         <br />
         <figure>
-          <!-- <img src="assets/images/case-study/acme_arch_1.png" class="case-study-image" /> -->
+          <img src="assets/images/pilot-up-cli.gif" class="case-study-image" />
           <figcaption>Fig. X: pilot up command</figcaption>
         </figure>
         <br />
 
-        <!-- Section 8 -->
-        <h2 class="h2">8 Design Decisions</h2>
+        <p>
+          Keep in mind that depending on your application and cloud provider, the deployment process can take multiple minutes to complete.
+        </p>
+
+        <!-- Section 7 -->
+        <h2 class="h2">7 Design Decisions</h2>
         <p>
           Our design intention while developing Pilot was to make it easy for a small team of developers
           to focus on writing code and deploying their applications with a cloud-agnostic approach. They
@@ -495,7 +496,7 @@
           to handle remote operations.
         </p>
         <br />
-        <h3>8.1 Extending Waypoint</h3>
+        <h3>7.1 Extending Waypoint</h3>
         <p>
           An integral decision for Pilot was to extend Waypoint. It is a fairly new product in the open
           source deployment space but gives you various options around image builds and deploying applications
@@ -506,7 +507,7 @@
         <br />
         <p>
           We were able to focus on CLI and infrastructure development since Waypoint has an existing user
-          interface. It is simple in features and does not require a large time investment to get the hang of. 
+          interface. It is well-designed and provides a simple to understand user interface. 
         </p>
         <br />
         <h4>Custom Plugin Ecosystem</h4>
@@ -519,7 +520,7 @@
         <h4>Trusted Open-Source Company</h4>
         <br />
         <p>
-          Waypoint was developed by HashiCorp which we considered to be a trusted open-source company.
+          Waypoint was developed by HashiCorp, which we consider to be a trusted open-source company.
           They are well known and have products that many companies have incorporated into their multi-cloud strategies. 
         </p>
         <br />
@@ -533,32 +534,32 @@
         </p>
         <br />
 
-        <h3>8.2 Handling Remote Waypoint Operations</h3>
+        <h3>7.2 Handling Remote Waypoint Operations</h3>
         <p>
-          Remote collaboration is an important aspect of a PaaS but can have some roadblocks when configuring your own.
+          Remote collaboration is an important aspect of a PaaS, but can introduce roadblocks when implementing your own.
         </p>
         <br />
         <h4>Steps to Set Up Waypoint</h4>
         <br />
         <p>
-          Currently with Waypoint it is difficult to use it as a remote management option.
+          As of right now, it is difficult to configure Waypoint as a remote management option.
           If a team wanted to integrate Waypoint into their platform, they would have to consider a few design decisions of their own. 
         </p>
         <br />
         <figure>
           <img src="assets/images/case-study/waypoint_steps.png" class="case-study-image" />
-          <figcaption>Fig. X: TODO</figcaption>
+          <figcaption>Fig. X: The necessary steps to configure a remote Waypoint server</figcaption>
         </figure>
         <br />
         <p>
-          First, you would need to provision the necessary infrastructure for remote operations
-          which could be an AWS EC2 virtual machine. Install and configure dependencies such as
-          Waypoint and Docker to be able to deploy applications to the cloud. Set up networking
-          and rules for the EC2 instance to restrict access to your developers for remote management. 
+          First, you would need to provision the necessary infrastructure for remote operations,
+          which could be an AWS EC2 virtual machine. Then install and configure dependencies, such as
+          Waypoint and Docker, to be able to deploy applications to the cloud. Setting up networking
+          and rules for the EC2 instance is also a necessary step to ensure your instance is secure.
         </p>
         <br />
         <p>
-          The Waypoint server would also need the proper permissions such as service credentials
+          The Waypoint server would also need the proper permissions, such as service credentials
           for all cloud providers you would want to deploy to. Additionally, Waypoint's documentation
           recommends configuring Docker-in-Docker for a remote Waypoint runner to handle building
           and pushing images to a container registry. Finally, you have to configure your local
@@ -579,24 +580,24 @@
         <br />
         <figure>
           <img src="assets/images/case-study/local_waypoint.png" class="case-study-image" />
-          <figcaption>Fig. X: TODO</figcaption>
+          <figcaption>Fig. X: A local Waypoint configuration with a single user</figcaption>
         </figure>
         <br />
         <p>
           As you can see, a simple Waypoint configuration is much easier when set up
-          locally. All that is requires is a Waypoint binary and a server container
+          locally. All that it requires is a Waypoint binary and a server container
           running on your local machine. A runner container is not necessary for taking
-          on deployment jobs. The Waypoint binary will serve as the runner in this
-          type of configuration which is less management overhead. 
+          on deployment jobs, since the Waypoint binary will serve as the runner in this
+          type of configuration, which is less management overhead. 
         </p>
         <br />
         <figure>
           <img src="assets/images/case-study/remote_waypoint.png" class="case-study-image" />
-          <figcaption>Fig. X: TODO</figcaption>
+          <figcaption>Fig. X: A remote Waypoint configuration with multiple users</figcaption>
         </figure>
         <br />
         <p>
-          A remote Pilot server would enable us to provide increased flexibility for
+          A remote Pilot server, on the other hand, would enable us to provide increased flexibility for
           our users. The Pilot server can be provisioned on our supported cloud providers
           to easily allow collaboration with a team. Users will not have to configure
           their local machine to be accessible on a network and you get a centralized
@@ -606,34 +607,34 @@
         <p>
           We also take away the concern of installing local dependencies for the
           deployment lifecycle. You will not have to install Docker, Pack, or any
-          additional tooling since they are available on the Pilot server. However
+          additional tooling since they are available on the Pilot server. However,
           we do provide the flexibility of managing the Pilot server through SSH access.
         </p>
         <br />
         <p>
-          Having a remote Pilot server is good and all but how should we install
+          Having a remote Pilot server is good and all, but how should we install
           the Waypoint server to it? Waypoint allows installing servers and runners
           using Docker, Kubernetes, and even HashiCorp’s Nomad orchestration service.
-          The options came down to Docker and Kubernetes as an installation platform
+          For Pilot, the options came down to Docker and Kubernetes as an installation platform
           for our containers. 
         </p>
         <br />
         <figure>
           <img src="assets/images/case-study/k8s_cluster.png" class="case-study-image" />
-          <figcaption>Fig. X: TODO</figcaption>
+          <figcaption>Fig. X: a kubernetes cluster running custom Pilot nodes</figcaption>
         </figure>
         <br />
         <p>
-          With Kubernetes orchestration we could spin up a cluster that would give us
+          With Kubernetes orchestration, we could spin up a cluster that would give us
           the benefits of high availability and scalability. Having multiple runners
           set up on a cluster would be able to handle concurrent deployments of
-          applications. This would be a value add for teams wanting simultaneous deployments
-          without a wait time. A cluster could also have self healing capabilities
+          applications. This would be a value-add for teams wanting simultaneous deployments
+          without a wait time. A cluster could also have self-healing capabilities
           to bring containers back up if they were to go down. 
         </p>
         <br />
         <p>
-          That all sounds great but Kubernetes has some drawbacks for users new to it.
+          That all sounds great, but Kubernetes has some drawbacks for users new to it.
         </p>
         <br />
         <p>
@@ -649,7 +650,7 @@
         <br />
         <figure>
           <img src="assets/images/case-study/pilot_server.png" class="case-study-image" />
-          <figcaption>Fig. X: TODO</figcaption>
+          <figcaption>Fig. X: the Pilot Server with Waypoint server and runner containers</figcaption>
         </figure>
         <br />
         <p>
@@ -657,7 +658,7 @@
           server and runner container on Docker as a platform. Through our testing as a
           small development team, a single Waypoint server and runner was enough for our needs.
           This makes it easier for users as they will only have to manage a single virtual machine
-          along with a couple of containers and not the headache of a Kubernetes cluster on top of it. 
+          along with a couple of containers, and not the headache of a Kubernetes cluster on top of it. 
         </p>
         <br />
         <p>
@@ -667,15 +668,15 @@
         <br />
 
 
-        <!-- Section 9 -->
-        <h2 class="h2">9 Implementation Challenges</h2>
+        <!-- Section 8 -->
+        <h2 class="h2">8 Implementation Challenges</h2>
         <p>
-          There were three major challenges we ran into while developing Pilot. Creating
+          There were three major challenges we ran into while developing Pilot: creating
           Waypoint plugins, building out a custom image capable of handling our Waypoint
           operations, and whether to use Docker-in-Docker for image builds.
         </p>
         <br />
-        <h3>9.1 Creating Waypoint Plugins</h3>
+        <h3>8.1 Creating Waypoint Plugins</h3>
         <p>
           Plugins are binaries written in Go that implement one or more Waypoint components.
           Waypoint components consist of the deployment lifecycle such as building artifacts
@@ -684,12 +685,12 @@
         </p>
         <br />
         <p>
-          When we started learning about Waypoint, we realized that many of the built in
+          When we started learning about Waypoint, we realized that many of the built-in
           plugins were geared towards deploying full-stack or backend applications. We felt
           there was an opportunity for plugins that were able to deploy static assets from
-          something like a React application. So we were happy to see Waypoint provides an
+          something like a React application, so we were happy to see Waypoint provides an
           SDK that allow developers to create their own plugins. You can create plugins that
-          execute for the entire build, deploy, release cycle or individual parts of it. 
+          execute for the entire build, deploy, and release cycle or individual parts of it. 
         </p>
         <br />
         <p>
@@ -712,13 +713,13 @@
         <p>
           Developing these plugins introduced their own challenges. For one, the documentation for creating plugins
           was a bit light on context. It and the associated tutorial focuses mainly on the build phase. Since the
-          information for additional components was more conceptual we needed to reference source code of the built
-          in plugins, custom plugins from other developers, and trial and error to get the functionality we wanted. 
+          information for additional components was more conceptual, we needed to reference source code of the built-in
+          plugins, custom plugins from other developers, and trial and error to get the functionality we wanted. 
         </p>
         <br />
         <figure>
           <img src="assets/images/case-study/sdk_table.png" class="case-study-image" />
-          <figcaption>Fig. X: TODO</figcaption>
+          <figcaption>Fig. X: a comparison table of the AWS and GCP SDKs</figcaption>
         </figure>
         <br />
         <p>
@@ -727,20 +728,20 @@
         </p>
         <br />
         <p>
-          The GCP SDK however was limited in some ways. Creating Cloud Storage buckets and uploading assets was
-          supported but provisioning the resources needed for a Cloud CDN release was not. Additionally, deleting
-          certain resources using the SDK was also partially supported which was a drawback when wanting to
+          The GCP SDK, however, was limited in some ways. Creating Cloud Storage buckets and uploading assets was
+          supported, but provisioning the resources needed for a Cloud CDN release was not. Additionally, deleting
+          certain resources using the SDK was also partially supported, which was a drawback when wanting to
           teardown those resources automatically. 
         </p>
         <br />
         <figure>
           <img src="assets/images/case-study/gcp_wrapper.png" class="case-study-image" />
-          <figcaption>Fig. X: TODO</figcaption>
+          <figcaption>Fig. X: a gcloud CLI command with its respective custom SDK function</figcaption>
         </figure>
         <br />
         <p>
           We decided to use a combination of the SDK with the gcloud CLI to give us the same functionality as
-          the Cloudfront plugin. We created a wrapper for gcloud commands to give a familiarity and usability
+          the Cloudfront plugin. We created a wrapper for gcloud commands to provide familiarity and usability
           as an SDK and it worked out fine for our needs. 
         </p>
         <br />
@@ -749,58 +750,58 @@
           when deploying front-end applications using our Cloud CDN plugin. 
         </p>
         <br />
-        <h3>9.2 Building a Custom Docker Image</h3>
+        <h3>8.2 Building a Custom Docker Image</h3>
         <p>
-          By default Waypoint uses HashiCorp's Waypoint image which can be found publicly available
+          By default, Waypoint uses HashiCorp's Waypoint image which can be found publicly available
           on Docker Hub. It includes the Waypoint binary and built-in plugins developed by HashiCorp.
           But this introduced a problem for our team when it came to adding our own plugins. 
         </p>
         <br />
         <figure>
           <img src="assets/images/case-study/waypoint_binary_1.png" class="case-study-image" />
-          <figcaption>Fig. X: TODO</figcaption>
+          <figcaption>Fig. X: the Waypoint image unable to pull our custom plugins</figcaption>
         </figure>
         <br />
         <p>
           We wanted to include our custom plugins for Yarn builds and Cloud CDN and Cloudfront
           deployments. At this time, Waypoint does not currently have a community plugin system
           for making custom plugins generally available. Our plugins also had their own
-          dependencies like NodeJS and Yarn to build static files or gcloud CLI for Cloud CDN provisioning.
+          dependencies, like NodeJS and Yarn to build static files and gcloud CLI for Cloud CDN provisioning.
         </p>
         <br />
         <figure>
           <img src="assets/images/case-study/waypoint_binary_2.png" class="case-study-image" />
-          <figcaption>Fig. X: TODO</figcaption>
+          <figcaption>Fig. X: our custom Waypoint image</figcaption>
         </figure>
         <br />
         <p>
           We decided to create our own custom Waypoint development and release images that can
-          be pulled from Docker Hub freely. To do this we had to reverse engineer Waypoint's
+          be pulled from Docker Hub freely. To do this, we had to reverse engineer Waypoint's
           default image and source code to figure out how Waypoint starts the server and runner
-          containers but also what packages the Waypoint image had internally. 
+          containers, but also what packages the Waypoint image had internally. 
         </p>
         <br />
         <p>
           Our investigation found the image was pretty much a barebones Linux distribution
           limited to the Bourne shell. Not much else stood out in terms of dependencies for
           normal Waypoint installations. This meant using that image as a base would require
-          installing multiple standard Linux packages you would expect in our Dockerfile. 
+          installing multiple standard Linux packages in our Dockerfile. 
         </p>
         <br />
         <p>
           We initially started off with a standard Node image and only needed to install
-          gcloud as a dependency. This worked fine but the resulting image was unnecessarily
+          gcloud as a dependency. This worked fine, but the resulting image was unnecessarily
           large at approximately ~1.6 gigs. The Node image has other packages installed we really
           did not need. Waypoint server installs took longer as a result. 
         </p>
         <br />
         <p>
           We were keen on downsizing the image build as much as possible and attempted multiple
-          prototypes. We discovered an image that Google maintains which contains gcloud and
+          prototypes. Eventually, we discovered an alpine image that Google maintains which contains gcloud and
           decided to use it as a base for our custom image. This cut down the bloat by 50%
           and increased performance of our Waypoint server installs using Pilot's image. 
         </p>
-        <h3>9.3 Docker-in-Docker Image Builds</h3>
+        <h3>8.3 Docker-in-Docker Image Builds</h3>
         <p>
           Another challenging aspect of remote Waypoint operations is executing image builds
           and pushes to a container registry from a runner container. There are several so
@@ -809,7 +810,7 @@
         <br />
         <figure>
           <img src="assets/images/case-study/docker_1.png" class="case-study-image" />
-          <figcaption>Fig. X: TODO</figcaption>
+          <figcaption>Fig. X: a container with the Docker socket mounted</figcaption>
         </figure>
         <br />
         <p>
@@ -823,7 +824,7 @@
         <br />
         <figure>
           <img src="assets/images/case-study/docker_2.png" class="case-study-image" />
-          <figcaption>Fig. X: TODO</figcaption>
+          <figcaption>Fig. X: a privileged container running on a Docker host</figcaption>
         </figure>
         <br />
         <p>
@@ -833,13 +834,13 @@
         </p>
         <br />
         <p>
-          The container will get full access to all devices on the host. Consequently this is
-          the same access to the host as any processes running outside of containers which can
+          The container will get full access to all devices on the host. Consequently, this is
+          the same access to the host as any processes running outside of containers, which can
           be a security flaw if the privileged container were to be compromised. 
         </p>
         <br />
         <p>
-          All Docker operations would occur within the container. Images would be built and
+          Additionally, all Docker operations would occur within the container. Images would be built and
           stored on the container which is not great when containers should be lightweight.
           Started containers would become children and nested within the outer container and
           this creates additional management overhead with the amount of abstraction. 
@@ -847,9 +848,9 @@
         <br />
         <p>
           Evaluating Docker-in-Docker generated its own problems. It is generally not recommended
-          due to the issues mentioned previously and more but it is meant for niche use cases such
-          as developing for Docker or using it in continuous integration. Even using it in terms
-          of continuous integration there are better options out there. 
+          due to the issues mentioned previously and more, as it is meant for niche use cases such
+          as developing for Docker or using it in continuous integration. Even when using it for
+          continuous integration, it is often seen as a last resort. 
         </p>
         <br />
         <p>
@@ -862,15 +863,15 @@
         <br />
         <figure>
           <img src="assets/images/case-study/docker_3.png" class="case-study-image" />
-          <figcaption>Fig. X: TODO</figcaption>
+          <figcaption>Fig. X: a container communicating with the Docker host via API</figcaption>
         </figure>
         <br />
         <p>
           Our solution was to make the host, being our Pilot server, a Docker server and
           expose Docker as an API for the runner container to consume. This looks and feels
-          like Docker-in-Docker but is not since we do not need a Docker installation on
+          like Docker-in-Docker, but is not since we do not need a Docker installation on
           the container. It also isolates Docker operations to the host where Docker is
-          installed. All you need for the runner was to set a <code>DOCKER_HOST</code> environment
+          installed. All we needed for the runner was to set a <code>DOCKER_HOST</code> environment
           variable referencing the host address and port. 
         </p>
         <br />
@@ -888,7 +889,7 @@
         <!-- TODO figure -->
         <br />
         <p>
-          We ran into a group called TeamTNT and they take over Docker processes, install
+          We ran into a group called TeamTNT, who take over Docker processes, install
           their image, and start a container. The container is used to compromise the host
           machine by mounting the host's <code>/bin/sh</code> path as a volume and using the <code>chroot</code> command
           to run a process on that path. Typically they will implement a crypto miner on the host machine. 
@@ -903,8 +904,8 @@
           source traffic has to come from the same address as the server and keeps the
           runner container on a Docker network.
         </p>
-        <!-- Section 10 -->
-        <h2 class="h2">10 Future Work</h2>
+        <!-- Section 9 -->
+        <h2 class="h2">9 Future Work</h2>
         <p>
           There are many features we would like to add to Pilot but we have a key few
           that would round out and bolster its capabilities and ease of use. 
@@ -928,8 +929,8 @@
           </li>
         </ul>
 
-        <!-- Section 11 -->
-        <h2>11 Team</h2>
+        <!-- Section 10 -->
+        <h2>10 Team</h2>
         <br>
         <br>
         <div class="section team-section">
