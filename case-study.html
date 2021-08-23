@@ -436,13 +436,41 @@
           and caches project metadata. The runner handles the execution of the deployment lifecycle. Whenever a command is executed, such as <code>pilot up</code>, the
           server receives the request, understands that it is a deployment command, then tells the runner to handle the execution for the proper application.
         </p>
-
-        <h3>5.3 Custom Waypoint Image</h3>
+        <br />
         <p>
           Instead of using the default Waypoint image provided, we needed to create our own custom Waypoint image so that the runner container can have everything it needs to
           handle the deployment process. We discuss this further in section 9.2.
         </p>
+        <br />
 
+        <h3>5.3 Pilot Database</h3>
+        <p>
+          Pilot also provisions a global PostgreSQL database for applications to use. The caveat is that only applications deployed
+          on the same cloud provider as the database can access it. For example, an application deployed on Elastic Container Service
+          would <i>not</i> be able to communicate with a Cloud SQL instance without manual configuration.
+        </p>
+        <br />
+        <h4>GCP Cloud SQL Instance</h4>
+        <p>
+          When running the command <code>pilot setup --gcp</code>, Pilot will provision a Cloud SQL instance using PostgreSQL.
+          To provide a layer of security, the database is limited to communicating via an internal IPV4 address with services in the same
+          VPC. We also provision a VPC Connector that allows for communication between a Serverless service, such as an application
+          running on Google Cloud Run, and the database.
+        </p>
+        <br />
+        <h4>AWS RDS Instance</h4>
+        <p>
+          When running the command <code>pilot setup --aws</code>, Pilot will provision an RDS instance using PostgreSQL.
+          To allow applications to communicate with the database, we also provision a subnet group and security group that
+          applications can be tied to.
+        </p>
+        <br />
+        <h4>Database Configuration</h4>
+        <p>
+          During setup, Pilot configures a database user for your applications to use. Any extra configuration will
+          need to be handled via the respective cloud provider's management console. Any necessary connection information
+          can be retrieved via <code>pilot server --db</code>; this will return the database address, user, and password.
+        </p>
         <h3>5.4 Application Deployment</h3>
         <p>
           With a <code>waypoint.hcl</code> configuration file, Pilot can be used to deploy applications with a variety of configurations. 
