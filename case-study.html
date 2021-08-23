@@ -115,7 +115,7 @@
         </p>
         <br />
         <figure>
-          <img src="assets/images/case-study/monolith_1.png" class="case-study-image" />
+          <img src="assets/images/case-study/monolith_1.gif" class="case-study-image" />
           <figcaption>Fig. 1: multiple users making requests to a monolithic application</figcaption>
         </figure>
         <br />
@@ -140,7 +140,7 @@
         </p>
         <br />
         <figure>
-          <img src="assets/images/case-study/monolith_2.png" class="case-study-image" />
+          <img src="assets/images/case-study/monolith_2.gif" class="case-study-image" />
           <figcaption>Fig. 2: the underlying services contained within the monolith's codebase</figcaption>
         </figure>
         <br />
@@ -151,7 +151,7 @@
         </p>
         <br />
         <figure>
-          <img src="assets/images/case-study/microservice_1.png" class="case-study-image" />
+          <img src="assets/images/case-study/microservice_1.gif" class="case-study-image" />
           <figcaption>Fig. 3: the same monolith broken apart into microservices</figcaption>
         </figure>
         <br />
@@ -211,7 +211,7 @@
         </p>
         <br />
         <figure>
-          <img src="assets/images/case-study/monolith_3.png" class="case-study-image" />
+          <img src="assets/images/case-study/monolith_3.gif" class="case-study-image" />
           <figcaption>Fig. 4: users overwhelming the authentication service in a monolithic application</figcaption>
         </figure>
         <br />
@@ -471,6 +471,64 @@
           need to be handled via the respective cloud provider's management console. Any necessary connection information
           can be retrieved via <code>pilot server --db</code>; this will return the database address, user, and password.
         </p>
+        <h3>5.4 Application Deployment</h3>
+        <p>
+          With a <code>waypoint.hcl</code> configuration file, Pilot can be used to deploy applications with a variety of configurations. 
+          We wanted to give flexibility to our users, so these configuration files are freely editable for your needs but we do provide some sensible defaults to play around with. 
+        </p>
+
+        <figure>
+          <img src="assets/images/case-study/waypoint_hcl_1.png" class="case-study-image" />
+          <figcaption>Fig. X: Example <code>waypoint.hcl</code> configuration used to deploy on ECS</figcaption>
+        </figure>
+
+        <p>
+          Here we will dive into the architecture of the deployment lifecycle being build, deploy, and release as well as how it pertains to the stanzas within a <code>waypoint.hcl</code>. 
+        </p>
+
+        <h4>Build</h4>
+        <p>
+          The <code>build</code> stanza defines how the application should be built into an image and where the image should be stored.
+        </p>
+        <p>
+          You can use Docker or Pack as builders to compile source code into an image.
+        </p>
+        <p>
+          A Docker build will require a <code>Dockerfile</code> in your project repository that is used to configure the dependencies needed for the application. 
+          The <code>Dockerfile</code> places more of a demand on the part of the user to figure out what is needed for their application to run properly. 
+          This can lead to oversized images if software is installed that is not actually needed.
+        </p>
+        <p>
+          Going with Pack for the build phase will use Cloud Native Buildpacks. Pack will analyze the source code of your project to determine the language and any necessary dependencies. 
+          After this analysis, Pack will apply any relevant buildpacks that can be used to build a runnable artifact without the user defining it themselves. 
+          This compilation of buildpacks creates a container image that can be used to spin up containers within a platform. 
+        </p>
+        <p>
+          Once the artifact is built the image is pushed to a container registry which in Pilot's case can be a AWS Elastic Container Registry or Google Cloud Container Registry repository. 
+        </p>
+
+        <h4>Deploy</h4>
+        <p>
+          The <code>deploy</code> stanza defines how an application is deployed on the cloud provider. 
+          It will take the built artifact from the registry and deploy it to a target deployment platform such as AWS Elastic Container Service or Google Cloud Run cluster. 
+          This allows Pilot deployed applications to run on a managed platform without a user needing to configure container orchestration such as networking and autoscaling resources. 
+        </p>
+        <p>
+          The deploy phase is also where applications are staged for release. 
+          Staging refers to the application being ready to receive traffic but is not open to public consumption by adding a load balancer or updating DNS records. 
+          Some platforms do not support staging like in the case of ECS which the <code>deploy</code> stanza serves as both the deploy and release phases.
+        </p>
+        <p>
+          In addition, this section of the configuration file can be used to define specifics once the container is deployed such as CPU and memory constraints or port number the application will listen on. 
+        </p>
+
+        <h4>Release</h4>
+        <p>
+          A <code>release</code> stanza defines the final phase of deployment. As mentioned in the previous section this is typically where the application is opened up for general traffic. 
+          The release phase is considered optional depending on the plugins being employed. It will generally attach a load balancer to an application, assign a DNS record, 
+          and any other configuration needed to make the application available on the internet. 
+        </p>
+
         <!-- Section 6 -->
         <h2 class="h2">6 Installing and Using Pilot</h2>
         <h3>6.1 Installation</h3>
@@ -1049,7 +1107,7 @@
                       </ul>
                     </div>
                     <div class="team-member-wrap">
-                      <!-- <img src="assets/images/team/nick.jpeg" loading="lazy" alt=""> -->
+                      <img src="assets/images/team/vince.jpg" loading="lazy" alt="">
                       <div class="team-member-info">
                         <div class="team-member-name">Vince Bundage</div>
                         <div class="team-member-location">Salt Lake City, UT</div>
